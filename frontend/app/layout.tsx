@@ -25,10 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${archivo.variable} ${workSans.variable}`}>
-        {children}
-      </body>
+    <html lang="en" className={`${archivo.variable} ${workSans.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
