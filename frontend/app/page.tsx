@@ -3,6 +3,7 @@ import { LandingStyles } from "@/components/landing/LandingStyles";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
 import { QuickCategories } from "@/components/landing/QuickCategories";
+import { ExploreMap } from "@/components/landing/ExploreMap";
 import { landingColors as c } from "@/components/landing/tokens";
 
 const unbounded = Unbounded({
@@ -30,6 +31,7 @@ export default function Home() {
       <LandingNav />
       <Hero />
       <QuickCategories />
+      <ExploreMap />
     </div>
   );
 }
