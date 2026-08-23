@@ -1,6 +1,10 @@
+from io import BytesIO
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from PIL import Image
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -64,3 +68,35 @@ class AuthAPITests(APITestCase):
     def test_me_requires_authentication(self):
         response = self.client.get(reverse("me"))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class VerificationUploadAPITests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="host@example.com", username="host1", password="Str0ngPassw0rd!"
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def _photo(self):
+        image = Image.new("RGB", (100, 100), color="red")
+        image_bytes = BytesIO()
+        image.save(image_bytes, format="JPEG")
+        image_bytes.seek(0)
+        return SimpleUploadedFile("nric.jpg", image_bytes.getvalue(), content_type="image/jpeg")
+
+    def test_upload_creates_pending_verification(self):
+        response = self.client.post(
+            reverse("verification-upload"), {"nric_photo": self._photo()}, format="multipart"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        verification = IdentityVerification.objects.get(user=self.user)
+        self.assertEqual(verification.status, IdentityVerification.Status.PENDING)
+
+    def test_second_upload_blocked_while_pending(self):
+        self.client.post(
+            reverse("verification-upload"), {"nric_photo": self._photo()}, format="multipart"
+        )
+        response = self.client.post(
+            reverse("verification-upload"), {"nric_photo": self._photo()}, format="multipart"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

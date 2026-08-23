@@ -8,4 +8,5 @@ urlpatterns = [
     path("auth/login/", views.LoginView.as_view(), name="login"),
     path("auth/logout/", views.LogoutView.as_view(), name="logout"),
     path("me/", views.MeView.as_view(), name="me"),
+    path("verification/", views.VerificationUploadView.as_view(), name="verification-upload"),
 ]

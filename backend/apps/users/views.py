@@ -1,10 +1,17 @@
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from rest_framework import permissions, status
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
+from .models import IdentityVerification
+from .serializers import (
+    IdentityVerificationSerializer,
+    LoginSerializer,
+    RegisterSerializer,
+    UserSerializer,
+)
 
 
 class CSRFView(APIView):
@@ -58,3 +65,21 @@ class MeView(APIView):
 
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+class VerificationUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        if IdentityVerification.objects.filter(
+            user=request.user, status=IdentityVerification.Status.PENDING
+        ).exists():
+            return Response(
+                {"detail": "A verification request is already pending."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer = IdentityVerificationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
+from .models import IdentityVerification
+
 User = get_user_model()
 
 
@@ -30,3 +32,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+
+class IdentityVerificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IdentityVerification
+        fields = ["id", "nric_photo", "status", "created_at"]
+        read_only_fields = ["id", "status", "created_at"]
