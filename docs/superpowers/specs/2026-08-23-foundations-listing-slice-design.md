@@ -13,6 +13,7 @@ create a listing; a renter (or anyone) can view it publicly.**
 
 Explicitly out of scope for this spec (each gets its own future
 brainstorm → spec → plan cycle):
+
 - Search/filter over listings (the geo column is added now so it isn't a
   costly retrofit later, but no search endpoint is built this round)
 - Booking, payment capture, escrow, payouts, commission
@@ -41,6 +42,7 @@ strategy, deployment topology) that every later slice builds on top of.
 ## 3. Data Models
 
 ### `users` app
+
 - `User` (extends Django `AbstractUser`, email as the login identifier via
   django-allauth). Both hosts and renters are the same `User` model — the
   PRD doesn't require strict role separation, a user can list space and
@@ -52,6 +54,7 @@ strategy, deployment topology) that every later slice builds on top of.
   `IdentityVerification` is approved via Django admin action.
 
 ### `listings` app
+
 - `Listing`: `owner` FK to `User`, `title`, `description`, `category`
   (choices field — self-categorized per PRD), `size_sqft`, `price_cents`
   (integer, MYR sen — never floats, per `CLAUDE.md`), `price_unit`
@@ -126,6 +129,7 @@ publish-gating logic live in the serializer.
 ## 8. Testing
 
 Backend (`python manage.py test`):
+
 - Listing `create` is blocked with a clear error when `is_verified` is
   False (permission/validation test).
 - Listing `list`/`retrieve` are publicly accessible without auth.
