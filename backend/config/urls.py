@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # apps.users.urls wired in during Task 3
+    path("api/v1/users/", include("apps.users.urls")),
     # apps.listings.urls wired in during Task 6
 ]
