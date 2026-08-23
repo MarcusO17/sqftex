@@ -2,6 +2,7 @@ import { Unbounded, Manrope } from "next/font/google";
 import { LandingStyles } from "@/components/landing/LandingStyles";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
+import { QuickCategories } from "@/components/landing/QuickCategories";
 import { landingColors as c } from "@/components/landing/tokens";
 
 const unbounded = Unbounded({
@@ -28,6 +29,7 @@ export default function Home() {
       <LandingStyles />
       <LandingNav />
       <Hero />
+      <QuickCategories />
     </div>
   );
 }
