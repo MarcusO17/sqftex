@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Work+Sans:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root {
+      --ink: #141414;
+      --paper: #FFFFFF;
+      --card: #F4F2ED;
+      --line: #C7C2B4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Work Sans', system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; }
+    h1, h3 { font-family: 'Archivo', system-ui, sans-serif; margin: 0; font-weight: 900; letter-spacing: -0.01em; }
+    p { margin: 0; }
+    a { color: var(--ink); text-decoration: none; }
+    .nav-link { font-size: 16px; font-weight: 600; color: var(--ink); }
+    .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+    .thumb { border-radius: 2px; cursor: pointer; overflow: hidden; background: var(--card); display: flex; align-items: center; justify-content: center; }
+    .seg { font-size: 14px; font-weight: 700; padding: 11px 18px; cursor: pointer; text-align: center; flex: 1; }
+    .amenity { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--ink); }
+  </style>
+</helmet>
+
+<div style="width:100%; min-height:1300px; background:var(--paper);">
+
+  <!-- NAV -->
+  <div style="display:flex; justify-content:space-between; align-items:center; height:80px; padding:0 64px; border-bottom:3px solid var(--ink);">
+    <div style="display:flex; align-items:center; gap:44px;">
+      <div style="font-family:'Archivo',sans-serif; font-size:26px; font-weight:900;">sqftex</div>
+      <div style="display:flex; gap:28px;">
+        <a href="#" class="nav-link">Browse</a>
+        <a href="#" class="nav-link">My bookings</a>
+      </div>
+    </div>
+    <div style="width:36px; height:36px; border-radius:50%; background:{{secondary}}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--ink);">JT</div>
+  </div>
+
+  <div style="padding:32px 64px 80px;">
+    <a href="#" class="nav-link" style="font-size:14px;">&larr; Back to results</a>
+
+    <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:56px; margin-top:24px; align-items:start;">
+
+      <!-- LEFT: gallery + details -->
+      <div style="display:flex; flex-direction:column; gap:32px;">
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div class="thumb" style="width:100%; height:380px; border:3px solid var(--ink);">
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" stroke="var(--line)" stroke-width="1.3"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M7 9V6a5 5 0 0110 0v3"/></svg>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px;">
+            <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="4">
+              <div class="thumb" style="height:76px; border:3px solid {{t.border}};" onClick="{{t.pick}}">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{{t.iconColor}}" stroke-width="1.4"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M7 9V6a5 5 0 0110 0v3"/></svg>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; padding-bottom:24px; border-bottom:3px solid var(--ink);">
+          <div class="label" style="color:{{primary}};">Warehouse bay</div>
+          <h1 style="font-size:34px;">WAREHOUSE BAY — PETALING JAYA</h1>
+          <div style="display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; margin-top:4px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+            Jalan Universiti, Petaling Jaya · 320 sqft
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+            <div style="background:{{primary}}; color:#fff; font-size:12px; font-weight:700; padding:4px 10px; border-radius:2px; letter-spacing:0.04em;">ID-VERIFIED HOST</div>
+            <span style="font-size:14px; font-weight:600;">Hosted by Wei Ling</span>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:24px; border-bottom:3px solid var(--ink);">
+          <h3 style="font-size:19px;">ABOUT THIS SPACE</h3>
+          <p style="font-size:15px; line-height:1.7; font-weight:500;">Ground-floor warehouse bay with direct loading access, set back from the main road in a quiet industrial row. Suitable for pallets, inventory overflow, or short-term storage between moves. Access is coordinated directly with the host.</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <h3 style="font-size:19px;">WHAT'S INCLUDED</h3>
+          <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px;">
+            <div class="amenity"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{primary}}" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>Ground floor loading bay</div>
+            <div class="amenity"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{primary}}" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>Power point available</div>
+            <div class="amenity"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{primary}}" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>CCTV on premises</div>
+            <div class="amenity"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{primary}}" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>Coordinated access with host</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: booking card -->
+      <div style="border:3px solid var(--ink); border-radius:2px; padding:28px; display:flex; flex-direction:column; gap:20px; position:sticky; top:24px;">
+
+        <div style="display:flex; border:2px solid var(--ink); border-radius:2px; overflow:hidden;">
+          <div class="seg" style="{{dayStyle}}" onClick="{{pickDay}}">DAILY</div>
+          <div class="seg" style="{{monthStyle}}" onClick="{{pickMonth}}">MONTHLY</div>
+        </div>
+
+        <div style="display:flex; align-items:baseline; gap:6px;">
+          <span style="font-family:'Archivo',sans-serif; font-size:38px; font-weight:900;">{{price}}</span>
+          <span style="font-size:14px; font-weight:600;">/ {{unitLabel}}</span>
+        </div>
+
+        <button style="padding:16px 24px; border-radius:2px; border:2px solid transparent; font-size:16px; font-weight:700; color:#fff; background:{{primary}};">REQUEST TO BOOK</button>
+
+        <p style="font-size:13px; line-height:1.6; font-weight:500;">Payment is captured at booking and held in escrow until you confirm move-in.</p>
+
+        <div style="border-top:2px solid var(--line); padding-top:16px; display:flex; flex-direction:column; gap:8px;">
+          <p style="font-size:13px; font-weight:600;">You'll need ID verification before this booking can be confirmed.</p>
+          <a href="#" style="font-size:13px; font-weight:700; color:{{primary}};">Verify your ID &rarr;</a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"primary":{"editor":"color","default":"#1B5E3F","options":["#1B5E3F","#124A31","#E8871E","#141414"],"section":"Brand"},"secondary":{"editor":"color","default":"#E8871E","options":["#E8871E","#C96F12","#1B5E3F","#141414"],"section":"Brand"}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { unit: 'month', activeImage: 0 };
+  }
+  renderVals() {
+    const primary = this.props.primary ?? '#1B5E3F';
+    const secondary = this.props.secondary ?? '#E8871E';
+    const ink = '#141414';
+    const line = '#C7C2B4';
+    const isMonth = this.state.unit === 'month';
+
+    const segStyle = (active) => `background:${active ? ink : '#FFFFFF'}; color:${active ? '#fff' : ink};`;
+
+    const thumbs = [0, 1, 2, 3].map((i) => {
+      const active = this.state.activeImage === i;
+      return {
+        border: active ? primary : ink,
+        iconColor: active ? primary : line,
+        pick: () => this.setState({ activeImage: i })
+      };
+    });
+
+    return {
+      primary,
+      secondary,
+      dayStyle: segStyle(!isMonth),
+      monthStyle: segStyle(isMonth),
+      price: isMonth ? 'RM 680' : 'RM 28',
+      unitLabel: isMonth ? 'month' : 'day',
+      pickDay: () => this.setState({ unit: 'day' }),
+      pickMonth: () => this.setState({ unit: 'month' }),
+      thumbs
+    };
+  }
+}
+</script>
+</body>
+</html>

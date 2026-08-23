@@ -1,0 +1,15 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1440, "h": 1900 },
+    { "file": "RoleSelect.dc.html", "x": 1560, "y": 0, "w": 1440, "h": 900 },
+    { "file": "Login.dc.html", "x": 3120, "y": 0, "w": 1440, "h": 900 },
+    { "file": "Browse.dc.html", "x": 0, "y": 2100, "w": 1440, "h": 1100 },
+    { "file": "ListingDetail.dc.html", "x": 1560, "y": 2100, "w": 1440, "h": 1300 },
+    { "file": "CreateListing.dc.html", "x": 3120, "y": 2100, "w": 1440, "h": 1300 }
+  ],
+  "annotations": [
+    { "id": "flow-onboarding", "x": 0, "y": -160, "w": 700, "text": "Onboarding flow: Landing → role picker (renter vs host) → account created immediately, no wall. Login is for returning users.\nBold flat IKEA-style system: forest green + amber blocks, Archivo/Work Sans, thick 2–3px rules, no shadows or gradients." },
+    { "id": "flow-marketplace", "x": 0, "y": 1940, "w": 700, "text": "Core marketplace loop: browse → listing detail → the host-side create-listing form.\nVerification is a persistent, non-blocking prompt on both screens — it only hard-gates at the moment of publish or booking." }
+  ],
+  "launch": { "view": "canvas" }
+}

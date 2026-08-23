@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Work+Sans:wght@400;500;600;700&display=swap">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root {
+      --ink: #141414;
+      --paper: #FFFFFF;
+      --card: #F4F2ED;
+      --line: #C7C2B4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Work Sans', system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--paper); -webkit-font-smoothing: antialiased; }
+    h1 { font-family: 'Archivo', system-ui, sans-serif; margin: 0; font-weight: 900; letter-spacing: -0.01em; }
+    p { margin: 0; }
+    a { color: var(--ink); text-decoration: none; }
+    .nav-link { font-size: 16px; font-weight: 600; color: var(--ink); }
+    .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+    label { font-size: 14px; font-weight: 700; color: var(--ink); }
+    input { font-family: 'Work Sans', sans-serif; font-size: 15px; padding: 13px 14px; border: 2px solid var(--line); border-radius: 2px; color: var(--ink); outline: none; width: 100%; }
+    input:focus { border-color: var(--ink); }
+    .chip { font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 2px; cursor: pointer; white-space: nowrap; }
+    .seg { font-size: 14px; font-weight: 700; padding: 11px 18px; cursor: pointer; text-align: center; flex: 1; }
+    .btn-primary { color: #fff; padding: 15px 28px; border: 2px solid transparent; border-radius: 2px; font-size: 16px; font-weight: 700; }
+    .btn-outline { background: transparent; color: var(--ink); padding: 15px 28px; border: 2px solid var(--ink); border-radius: 2px; font-size: 16px; font-weight: 700; }
+  </style>
+</helmet>
+
+<div style="width:100%; min-height:1300px; background:var(--paper);">
+
+  <!-- NAV -->
+  <div style="display:flex; justify-content:space-between; align-items:center; height:80px; padding:0 64px; border-bottom:3px solid var(--ink);">
+    <div style="display:flex; align-items:center; gap:44px;">
+      <div style="font-family:'Archivo',sans-serif; font-size:26px; font-weight:900;">sqftex</div>
+      <div style="display:flex; gap:28px;">
+        <a href="#" class="nav-link">Browse</a>
+        <a href="#" class="nav-link">My listings</a>
+      </div>
+    </div>
+    <div style="width:36px; height:36px; border-radius:50%; background:{{secondary}}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--ink);">WL</div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; align-items:center; padding:56px 64px 96px;">
+    <div style="width:100%; max-width:640px; display:flex; flex-direction:column; gap:32px;">
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="label">New listing</div>
+        <h1 style="font-size:36px;">LIST YOUR SPACE</h1>
+      </div>
+
+      <!-- verification banner -->
+      <div style="display:flex; align-items:center; gap:14px; background:{{secondary}}; border-radius:2px; padding:16px 20px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" style="flex-shrink:0;"><path d="M12 3l7 3.5v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9v-5L12 3z"/></svg>
+        <p style="font-size:14px; font-weight:600; color:var(--ink); flex:1;">You can draft this listing now. ID verification is required before it goes live to renters.</p>
+        <a href="#" style="font-size:14px; font-weight:700; color:var(--ink); white-space:nowrap; text-decoration:underline;">Verify now &rarr;</a>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:24px;">
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label>Title</label>
+          <input placeholder="e.g. Ground-floor warehouse bay, Petaling Jaya" />
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label>Category</label>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <sc-for list="{{chips}}" as="chip" hint-placeholder-count="5">
+              <div class="chip" style="{{chip.style}}" onClick="{{chip.pick}}">{{chip.label}}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label>Address</label>
+          <input placeholder="Street, area" />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label>Size (sqft)</label>
+            <input type="number" placeholder="320" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label>Price (RM)</label>
+            <input type="number" placeholder="680" />
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label>Billed</label>
+          <div style="display:flex; border:2px solid var(--ink); border-radius:2px; overflow:hidden; max-width:280px;">
+            <div class="seg" style="{{dayStyle}}" onClick="{{pickDay}}">DAILY</div>
+            <div class="seg" style="{{monthStyle}}" onClick="{{pickMonth}}">MONTHLY</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label>Photos</label>
+          <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px;">
+            <sc-for list="{{photos}}" as="p" hint-placeholder-count="0">
+              <div style="height:88px; border-radius:2px; background:var(--card); border:2px solid var(--ink); display:flex; align-items:center; justify-content:center;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--line)" stroke-width="1.4"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M7 9V6a5 5 0 0110 0v3"/></svg>
+              </div>
+            </sc-for>
+            <sc-if value="{{canAddMore}}" hint-placeholder-val="{{true}}">
+              <div onClick="{{addPhoto}}" style="height:88px; border-radius:2px; border:2px dashed var(--ink); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M4 7a2 2 0 012-2h2l2-2h4l2 2h2a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                <span style="font-size:12px; font-weight:700;">ADD PHOTO</span>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; margin-top:8px;">
+          <button class="btn-primary" style="background:{{primary}};">PUBLISH LISTING</button>
+          <button class="btn-outline">SAVE AS DRAFT</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"primary":{"editor":"color","default":"#1B5E3F","options":["#1B5E3F","#124A31","#E8871E","#141414"],"section":"Brand"},"secondary":{"editor":"color","default":"#E8871E","options":["#E8871E","#C96F12","#1B5E3F","#141414"],"section":"Brand"}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { category: 'Warehouse bay', unit: 'month', photoCount: 1 };
+  }
+  renderVals() {
+    const primary = this.props.primary ?? '#1B5E3F';
+    const secondary = this.props.secondary ?? '#E8871E';
+    const ink = '#141414';
+    const isMonth = this.state.unit === 'month';
+
+    const chipNames = ['Self-storage', 'Warehouse bay', 'Retail backroom', 'Vehicle & boat', 'Office storage'];
+    const chips = chipNames.map((name) => {
+      const isActive = this.state.category === name;
+      return {
+        label: name,
+        style: `border:2px solid ${ink}; background:${isActive ? ink : '#FFFFFF'}; color:${isActive ? '#fff' : ink};`,
+        pick: () => this.setState({ category: name })
+      };
+    });
+
+    const segStyle = (active) => `background:${active ? ink : '#FFFFFF'}; color:${active ? '#fff' : ink};`;
+
+    const count = this.state.photoCount;
+    const photos = Array.from({ length: count });
+
+    return {
+      primary,
+      secondary,
+      chips,
+      dayStyle: segStyle(!isMonth),
+      monthStyle: segStyle(isMonth),
+      pickDay: () => this.setState({ unit: 'day' }),
+      pickMonth: () => this.setState({ unit: 'month' }),
+      photos,
+      canAddMore: count < 4,
+      addPhoto: () => this.setState({ photoCount: Math.min(4, this.state.photoCount + 1) })
+    };
+  }
+}
+</script>
+</body>
+</html>
