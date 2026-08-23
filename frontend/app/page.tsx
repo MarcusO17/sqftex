@@ -5,6 +5,7 @@ import { Hero } from "@/components/landing/Hero";
 import { QuickCategories } from "@/components/landing/QuickCategories";
 import { ExploreMap } from "@/components/landing/ExploreMap";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { TrustStrip } from "@/components/landing/TrustStrip";
 import { landingColors as c } from "@/components/landing/tokens";
 
 const unbounded = Unbounded({
@@ -34,6 +35,7 @@ export default function Home() {
       <QuickCategories />
       <ExploreMap />
       <HowItWorks />
+      <TrustStrip />
     </div>
   );
 }
