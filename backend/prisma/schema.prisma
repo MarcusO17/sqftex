@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  clerkUserId   String   @unique
+  email         String   @unique
+  username      String?
+  isVerified    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  listings              Listing[]
+  verifications         IdentityVerification[] @relation("Verified")
+  reviewedVerifications IdentityVerification[] @relation("Reviewer")
+}
+
+enum VerificationStatus {
+  pending
+  approved
+  rejected
+}
+
+model IdentityVerification {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation("Verified", fields: [userId], references: [id], onDelete: Cascade)
+  nricPhotoUrl String
+  status       VerificationStatus @default(pending)
+  reviewedById Int?
+  reviewedBy   User?    @relation("Reviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+}
+
+enum ListingCategory {
+  spare_room
+  garage
+  shoplot_back_room
+  warehouse_bay
+  other
+}
+
+enum PriceUnit {
+  daily
+  monthly
+}
+
+enum ListingStatus {
+  draft
+  active
+}
+
+model Listing {
+  id              Int      @id @default(autoincrement())
+  ownerId         Int
+  owner           User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title           String
+  description     String
+  category        ListingCategory
+  sizeSqft        Int
+  priceCents      Int
+  priceUnit       PriceUnit
+  lat             Float
+  lng             Float
+  address         String
+  accessRules     String   @default("")
+  prohibitedItems String   @default("")
+  status          ListingStatus @default(draft)
+  photos          ListingPhoto[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ListingPhoto {
+  id        Int     @id @default(autoincrement())
+  listingId Int
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  order     Int     @default(0)
+}
