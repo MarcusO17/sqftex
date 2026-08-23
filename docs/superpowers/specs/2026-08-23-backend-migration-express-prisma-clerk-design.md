@@ -98,7 +98,7 @@ model IdentityVerification {
   notes        String   @default("")
   createdAt    DateTime @default(now())
 }
-enum VerificationStatus { PENDING APPROVED REJECTED }
+enum VerificationStatus { pending approved rejected }
 
 model Listing {
   id              Int      @id @default(autoincrement())
@@ -120,9 +120,9 @@ model Listing {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
-enum ListingCategory { SPARE_ROOM GARAGE SHOPLOT_BACK_ROOM WAREHOUSE_BAY OTHER }
-enum PriceUnit { DAILY MONTHLY }
-enum ListingStatus { DRAFT ACTIVE }
+enum ListingCategory { spare_room garage shoplot_back_room warehouse_bay other }
+enum PriceUnit { daily monthly }
+enum ListingStatus { draft active }
 
 model ListingPhoto {
   id        Int     @id @default(autoincrement())
@@ -137,6 +137,12 @@ Route handlers translate these camelCase Prisma fields to the exact
 snake_case JSON keys the frontend already expects (`size_sqft`,
 `price_cents`, `location_lat`, `location_lng`, photo `image`, etc.) — the
 same job DRF's serializers were doing.
+
+Enum values are lowercase snake_case (`spare_room`, `daily`, `active`,
+`pending`, ...), matching Django's `TextChoices` values exactly — the
+frontend hardcodes these strings directly (e.g.
+`frontend/lib/listingCategories.ts`), so this isn't cosmetic, it's part
+of the contract.
 
 ## Routes
 
