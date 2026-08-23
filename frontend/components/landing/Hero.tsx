@@ -1,0 +1,225 @@
+import Link from "next/link";
+import { landingColors as c } from "./tokens";
+
+export function Hero() {
+  return (
+    <div style={{ padding: "208px 64px 0 64px", display: "flex", gap: 56, alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ flex: "1 1 480px", display: "flex", flexDirection: "column", gap: 24 }}>
+        <div
+          style={{
+            display: "inline-flex",
+            alignSelf: "flex-start",
+            alignItems: "center",
+            gap: 8,
+            background: c.accentSoft,
+            color: c.accent,
+            fontWeight: 800,
+            fontSize: 11.5,
+            letterSpacing: "0.06em",
+            padding: "8px 12px",
+            borderRadius: 6,
+            textTransform: "uppercase",
+          }}
+        >
+          Now live &mdash; Klang Valley
+        </div>
+        <h1
+          style={{
+            fontFamily: "var(--font-landing-heading), sans-serif",
+            fontWeight: 700,
+            fontSize: 80,
+            lineHeight: 1,
+            color: c.ink,
+            margin: 0,
+            letterSpacing: "-0.02em",
+            textTransform: "uppercase",
+          }}
+        >
+          Spare
+          <br />
+          space.
+          <br />
+          <span style={{ color: c.accent }}>
+            Sorted
+            <br />
+            fast.
+          </span>
+        </h1>
+        <p style={{ fontSize: 18, lineHeight: 1.6, color: c.muted, margin: "8px 0 0 0", maxWidth: 440 }}>
+          Book a storage room, garage bay or warehouse unit from a verified host near you &mdash;
+          by the day or by the month, no lease required.
+        </p>
+
+        <form
+          action="/listings"
+          method="get"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            background: "#FFFFFF",
+            border: `1px solid ${c.line}`,
+            borderRadius: 12,
+            padding: "8px 8px 8px 20px",
+            marginTop: 14,
+            maxWidth: 460,
+            boxShadow: "0 10px 26px rgba(14,13,16,0.05)",
+          }}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c.muted} strokeWidth="1.8">
+            <circle cx="12" cy="10" r="3" />
+            <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0114 0c0 3-3 6.5-7 11z" />
+          </svg>
+          <input
+            type="text"
+            name="q"
+            placeholder="Enter your area"
+            style={{
+              border: "none",
+              outline: "none",
+              fontFamily: "inherit",
+              fontSize: 15,
+              fontWeight: 500,
+              color: c.ink,
+              flex: 1,
+              background: "transparent",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              background: c.ink,
+              color: "#FFFFFF",
+              fontWeight: 700,
+              fontSize: 14,
+              padding: "12px 22px",
+              borderRadius: 9,
+              border: "none",
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Search
+          </button>
+        </form>
+
+        <Link href="/listings/new" style={{ fontSize: 14, color: c.muted, fontWeight: 600, marginTop: 8 }}>
+          Have spare space instead?{" "}
+          <span style={{ textDecoration: "underline" }}>List it and start earning &rarr;</span>
+        </Link>
+      </div>
+
+      <div
+        style={{
+          flex: "1 1 420px",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 760,
+        }}
+      >
+        <span
+          style={{
+            position: "absolute",
+            fontFamily: "var(--font-landing-heading), sans-serif",
+            fontWeight: 700,
+            fontSize: 170,
+            color: "#F0F0F3",
+            zIndex: 0,
+            userSelect: "none",
+            lineHeight: 1,
+          }}
+        >
+          SQFT
+        </span>
+
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            width: 420,
+            height: 460,
+            borderRadius: 28,
+            background: c.accent,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            padding: 32,
+            boxShadow: "0 30px 70px rgba(8,145,178,0.25)",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-landing-heading), sans-serif",
+              fontWeight: 700,
+              fontSize: 40,
+              color: "#FFFFFF",
+              lineHeight: 1.1,
+            }}
+          >
+            No lease.
+          </span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: "#CFF0F6", marginTop: 10 }}>
+            Book any space by the day or the month &mdash; cancel anytime.
+          </span>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            top: 26,
+            left: -10,
+            zIndex: 2,
+            background: c.categoryStorage,
+            color: "#FFFFFF",
+            fontWeight: 800,
+            fontSize: 13,
+            padding: "10px 16px",
+            borderRadius: 10,
+            boxShadow: "0 12px 26px rgba(14,13,16,0.22)",
+            transform: "rotate(-8deg)",
+          }}
+        >
+          Storage Room
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 180,
+            right: -24,
+            zIndex: 2,
+            background: c.categoryGarage,
+            color: c.ink,
+            fontWeight: 800,
+            fontSize: 13,
+            padding: "10px 16px",
+            borderRadius: 10,
+            boxShadow: "0 12px 26px rgba(14,13,16,0.18)",
+            transform: "rotate(6deg)",
+          }}
+        >
+          Garage Bay
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            bottom: 8,
+            left: 16,
+            zIndex: 2,
+            background: c.categoryWarehouse,
+            color: "#FFFFFF",
+            fontWeight: 800,
+            fontSize: 13,
+            padding: "10px 16px",
+            borderRadius: 10,
+            boxShadow: "0 12px 26px rgba(14,13,16,0.18)",
+            transform: "rotate(-4deg)",
+          }}
+        >
+          Warehouse
+        </div>
+      </div>
+    </div>
+  );
+}
