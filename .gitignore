@@ -1,1 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+backend/staticfiles/
+backend/test-media/
+backend/.env
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# OS
+.DS_Store
+
+# SDD scratch workspace
 .worktrees/
