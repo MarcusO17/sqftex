@@ -29,6 +29,12 @@
 // is the correct/recommended way to inject raw CSS text either way.
 const css = `
       :root {
+        /* Unbounded/Manrope are loaded once, app-wide, in the root layout
+           (app/layout.tsx) as --font-display/--font-sans — aliased here
+           under their original landing-scoped names instead of loading the
+           same Google Fonts a second time under a second name. */
+        --font-landing-heading: var(--font-heading);
+        --font-landing-body: var(--font-body);
         --landing-paper: #FAFAFB;
         --landing-ink: #0E0D10;
         --landing-muted: #6E6A76;

@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 // Shared top nav. "guest" is shown on marketing/auth screens (landing, login);
 // "app" is shown on the logged-in surfaces (browse, listing detail, create
 // listing) — this only controls which nav links show, not sign-in state,
 // which comes from Clerk directly via <SignedIn>/<SignedOut>.
+//
+// Stays in normal document flow (not the landing page's fixed floating
+// pill) — that overlap-the-hero treatment is a marketing-page-specific
+// flourish; every other page here needs the nav to reliably reserve its
+// own space above scrolling content. Shares the app's promoted palette/
+// shape language (rounded corners, thin --line borders) instead.
 interface NavBarProps {
   variant: "guest" | "app";
 }
@@ -16,13 +22,14 @@ export function NavBar({ variant }: NavBarProps) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        height: 80,
+        height: 76,
         padding: "0 64px",
-        borderBottom: "3px solid var(--ink)",
+        background: "var(--paper)",
+        borderBottom: "1px solid var(--line)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 44 }}>
-        <Link href="/" style={{ fontFamily: "var(--font-heading)", fontSize: 26, fontWeight: 900 }}>
+        <Link href="/" style={{ fontFamily: "var(--font-heading)", fontSize: 24, fontWeight: 800 }}>
           sqftex
         </Link>
         {variant === "app" && (
@@ -38,9 +45,11 @@ export function NavBar({ variant }: NavBarProps) {
       </div>
 
       <SignedOut>
-        <Link href="/login" className="btn-primary">
-          Log in
-        </Link>
+        <SignInButton mode="modal">
+          <button type="button" className="btn-primary">
+            Log in
+          </button>
+        </SignInButton>
       </SignedOut>
       <SignedIn>
         <UserButton afterSignOutUrl="/" />

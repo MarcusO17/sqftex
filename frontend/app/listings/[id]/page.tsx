@@ -138,7 +138,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
             }}
           >
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ fontFamily: "var(--font-heading)", fontSize: 38, fontWeight: 900 }}>
+              <span style={{ fontFamily: "var(--font-heading)", fontSize: 38, fontWeight: 800 }}>
                 RM {ringgit}
               </span>
               <span style={{ fontSize: 14, fontWeight: 600 }}>/ {unitLabel}</span>

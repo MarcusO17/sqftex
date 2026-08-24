@@ -1,4 +1,3 @@
-import { Unbounded, Manrope } from "next/font/google";
 import { LandingStyles } from "@/components/landing/LandingStyles";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
@@ -9,17 +8,6 @@ import { TrustStrip } from "@/components/landing/TrustStrip";
 import { HostBand } from "@/components/landing/HostBand";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { listListings, type Listing } from "@/lib/api/listings";
-
-const unbounded = Unbounded({
-  subsets: ["latin"],
-  variable: "--font-landing-heading",
-  weight: ["600", "700", "800"],
-});
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-landing-body",
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 // Listings change constantly and there's no live backend at build time in
 // this environment — same reasoning as /listings (see that page).
@@ -45,7 +33,6 @@ export default async function Home() {
 
   return (
     <div
-      className={`${unbounded.variable} ${manrope.variable}`}
       style={{
         position: "relative",
         fontFamily: "var(--font-landing-body), system-ui, sans-serif",

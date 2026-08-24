@@ -3,42 +3,47 @@
 @tailwind utilities;
 
 :root {
-  --ink: #141414;
-  --paper: #ffffff;
-  --card: #f4f2ed;
-  --line: #c7c2b4;
-  --primary: #1b5e3f;
-  --primary-dark: #124a31;
-  --secondary: #e8871e;
-  --secondary-dark: #c96f12;
+  /* Promoted from the landing page's palette (see
+     docs/superpowers/specs/2026-08-23-landing-page-redesign-design.md,
+     "Open items" #6) so the rest of the app — /login, /listings/*, and
+     shadcn/ui components below — reads as one system instead of two.
+     Dark mode stays landing-only for now; these are light-mode-only. */
+  --ink: #0e0d10;
+  --paper: #fafafb;
+  --card: #f2f1f4;
+  --line: #e2e1e6;
+  --primary: #0891b2;
+  --primary-dark: #066e8a;
+  --secondary: #ff7a1e;
+  --secondary-dark: #d9600a;
 
-  --font-heading: var(--font-archivo), system-ui, sans-serif;
-  --font-body: var(--font-work-sans), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-display), system-ui, sans-serif;
+  --font-body: var(--font-sans), system-ui, -apple-system, sans-serif;
 
   /* shadcn/ui tokens — HSL triples (no hsl() wrapper, per shadcn convention)
      mapped from the hex tokens above so shadcn components (components/ui/*)
      match the site's existing brand colors instead of introducing a second
      palette. --radius is tuned for the landing page's rounded/pill CTAs;
      individual components can still override radius per instance. */
-  --background: 0 0% 100%;
-  --foreground: 0 0% 8%;
-  --card-shadcn: 43 24% 94%;
-  --card-shadcn-foreground: 0 0% 8%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 8%;
-  --primary-shadcn: 152 55% 24%;
+  --background: 240 11% 98%;
+  --foreground: 260 10% 6%;
+  --card-shadcn: 260 12% 95%;
+  --card-shadcn-foreground: 260 10% 6%;
+  --popover: 240 11% 98%;
+  --popover-foreground: 260 10% 6%;
+  --primary-shadcn: 192 91% 36%;
   --primary-shadcn-foreground: 0 0% 100%;
-  --secondary-shadcn: 31 81% 51%;
+  --secondary-shadcn: 25 100% 56%;
   --secondary-shadcn-foreground: 0 0% 100%;
-  --muted: 43 24% 94%;
-  --muted-foreground: 0 0% 40%;
-  --accent: 43 24% 94%;
-  --accent-foreground: 0 0% 8%;
+  --muted: 260 12% 95%;
+  --muted-foreground: 260 5% 44%;
+  --accent: 260 12% 95%;
+  --accent-foreground: 260 10% 6%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 44 15% 74%;
-  --input: 44 15% 74%;
-  --ring: 152 55% 40%;
+  --border: 252 9% 89%;
+  --input: 252 9% 89%;
+  --ring: 192 91% 36%;
   --radius: 0.75rem;
 }
 
@@ -67,7 +72,10 @@ h3,
 h4 {
   font-family: var(--font-heading);
   margin: 0;
-  font-weight: 900;
+  /* 800, not 900 — Unbounded (--font-display) is only loaded at
+     600/700/800 (see app/layout.tsx); 900 would just fall back to the
+     nearest loaded weight anyway. */
+  font-weight: 800;
   letter-spacing: -0.01em;
 }
 
@@ -114,8 +122,8 @@ textarea {
   color: #fff;
   background: var(--primary);
   padding: 15px 28px;
-  border: 2px solid transparent;
-  border-radius: 2px;
+  border: 1px solid transparent;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -137,8 +145,8 @@ textarea {
   background: transparent;
   color: var(--ink);
   padding: 15px 28px;
-  border: 2px solid var(--ink);
-  border-radius: 2px;
+  border: 1px solid var(--ink);
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -166,8 +174,8 @@ textarea {
 .field textarea {
   font-size: 15px;
   padding: 13px 14px;
-  border: 2px solid var(--line);
-  border-radius: 2px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   color: var(--ink);
   outline: none;
   width: 100%;
@@ -190,8 +198,8 @@ textarea {
   font-size: 14px;
   font-weight: 700;
   padding: 9px 18px;
-  border-radius: 2px;
-  border: 2px solid var(--ink);
+  border-radius: 999px;
+  border: 1px solid var(--ink);
   cursor: pointer;
   white-space: nowrap;
   background: var(--paper);
