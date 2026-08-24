@@ -3,7 +3,13 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   rootDir: ".",
-  testMatch: ["<rootDir>/tests/**/*.test.ts"],
+  // testMatch (glob-based) breaks Jest's path resolution when the repo sits
+  // under a dot-prefixed directory segment, e.g. a `.claude/worktrees/...`
+  // checkout on Windows — the `\.` right before that segment gets parsed as
+  // an escaped literal dot instead of a path separator, so the glob matches
+  // zero files. testRegex does plain regex matching against the resolved
+  // path instead of glob semantics, which isn't affected by this.
+  testRegex: "tests[\\\\/].*\\.test\\.ts$",
   setupFilesAfterEnv: ["<rootDir>/tests/setupEnv.ts"],
   // Jest resets the module registry per test FILE (not once for the whole
   // run), so AdminJS's cold build (src/admin/adminRouter.ts's module-level
