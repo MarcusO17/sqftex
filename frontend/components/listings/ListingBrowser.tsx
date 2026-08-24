@@ -4,7 +4,34 @@ import { useCallback, useMemo, useState } from "react";
 import type { Listing } from "@/lib/api/listings";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 import { MapEmbed } from "@/components/map/MapEmbed";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { ListingCard } from "./ListingCard";
+
+const PAGE_SIZE = 10;
+
+// Page numbers to render around the current page, with "…" for gaps —
+// e.g. [1, "…", 4, 5, 6, "…", 12]. Shows every page when there aren't many.
+function pageNumbers(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sorted = Array.from(pages)
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b);
+  const result: (number | "ellipsis")[] = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) result.push("ellipsis");
+    result.push(p);
+  });
+  return result;
+}
 
 // Client-only: filtering runs over the listings the server already fetched,
 // no extra API calls. See CLAUDE.md — filters are one of the cases that
@@ -12,7 +39,17 @@ import { ListingCard } from "./ListingCard";
 export function ListingBrowser({ listings }: { listings: Listing[] }) {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [focusedId, setFocusedId] = useState<number | null>(null);
+
+  function changeCategory(next: string) {
+    setCategory(next);
+    setPage(1);
+  }
+  function changeQuery(next: string) {
+    setQuery(next);
+    setPage(1);
+  }
 
   // Clicking a map pin opens its preview popup (see LeafletMap) rather than
   // navigating straight away — this is what that popup reports back:
@@ -36,6 +73,12 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
     });
   }, [listings, category, query]);
 
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // The map mirrors only the current page's pins, not every filtered
+  // result — keeps it in sync with what's actually visible in the list
+  // (a pin for a listing on another page would have nothing to scroll to).
+  const pageItems = useMemo(() => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filtered, page]);
+
   return (
     <div>
       <div
@@ -50,7 +93,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
         }}
       >
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <button className="chip" data-active={category === "all"} onClick={() => setCategory("all")}>
+          <button className="chip" data-active={category === "all"} onClick={() => changeCategory("all")}>
             All
           </button>
           {LISTING_CATEGORIES.map((c) => (
@@ -58,7 +101,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
               key={c.value}
               className="chip"
               data-active={category === c.value}
-              onClick={() => setCategory(c.value)}
+              onClick={() => changeCategory(c.value)}
             >
               {c.label}
             </button>
@@ -79,7 +122,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
           </svg>
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => changeQuery(e.target.value)}
             placeholder="Search by title or area"
             style={{
               fontSize: 14,
@@ -102,19 +145,70 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
           {filtered.length === 0 ? (
             <p style={{ fontSize: 15 }}>No listings match your filters.</p>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-              {filtered.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} focused={listing.id === focusedId} />
-              ))}
-            </div>
+            <>
+              <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                {pageItems.map((listing) => (
+                  <ListingCard key={listing.id} listing={listing} focused={listing.id === focusedId} />
+                ))}
+              </div>
+
+              {pageCount > 1 && (
+                <Pagination style={{ marginTop: 32, justifyContent: "flex-start" }}>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (page > 1) setPage(page - 1);
+                        }}
+                        aria-disabled={page === 1}
+                        style={page === 1 ? { pointerEvents: "none", opacity: 0.4 } : undefined}
+                      />
+                    </PaginationItem>
+                    {pageNumbers(page, pageCount).map((p, i) =>
+                      p === "ellipsis" ? (
+                        <PaginationItem key={`ellipsis-${i}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            href="#"
+                            isActive={p === page}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPage(p);
+                            }}
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (page < pageCount) setPage(page + 1);
+                        }}
+                        aria-disabled={page === pageCount}
+                        style={page === pageCount ? { pointerEvents: "none", opacity: 0.4 } : undefined}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </>
           )}
         </div>
 
         {/* Map on the right — sticky so it stays in view while the list
-            scrolls, reactive to the current category/search filters (not
-            just the full listing set) so it always matches what's on the
-            left. Hidden below lg: a half-height map fighting a narrow list
-            column for space isn't worth it on small screens. */}
+            scrolls, showing pins for exactly the current page (not the
+            full filtered set) so it always matches what's actually visible
+            on the left. Hidden below lg: a half-height map fighting a
+            narrow list column for space isn't worth it on small screens. */}
         <div
           className="hidden lg:block"
           style={{
@@ -133,7 +227,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             zIndex: 1,
           }}
         >
-          <MapEmbed listings={filtered} onPinFocus={handlePinFocus} onPinBlur={handlePinBlur} />
+          <MapEmbed listings={pageItems} onPinFocus={handlePinFocus} onPinBlur={handlePinBlur} />
         </div>
       </div>
     </div>
