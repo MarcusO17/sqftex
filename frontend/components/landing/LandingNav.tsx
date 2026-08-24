@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -78,13 +79,29 @@ export function LandingNav() {
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <ThemeToggle />
-        <Link
-          href="/login"
-          className="landing-navlink"
-          style={{ color: "var(--landing-nav-link)", fontWeight: 600, fontSize: 14.5, padding: "0 10px" }}
-        >
-          Log in
-        </Link>
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button
+              type="button"
+              className="landing-navlink"
+              style={{
+                color: "var(--landing-nav-link)",
+                fontWeight: 600,
+                fontSize: 14.5,
+                padding: "0 10px",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "inherit",
+              }}
+            >
+              Log in
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
         <Button
           asChild
           className="h-auto rounded-[10px] bg-[var(--landing-btn-bg)] px-[22px] py-3 text-sm font-bold text-[var(--landing-btn-text)] hover:bg-[var(--landing-btn-bg)] hover:opacity-90"
