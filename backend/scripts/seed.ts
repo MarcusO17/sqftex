@@ -5,7 +5,11 @@ import { PrismaClient, VerificationStatus } from "@prisma/client";
 const prisma = new PrismaClient();
 const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
 
-const DEMO_DOMAIN = "sqftex.test";
+// Not sqftex.test: .test is a DNS special-use reserved TLD (RFC 2606), not
+// a real public suffix, and Clerk's email format validator rejects it.
+// example.com is IANA's reserved documentation domain — valid TLD, never
+// delivers mail, safe for demo/seed accounts.
+const DEMO_DOMAIN = "example.com";
 const DEMO_PASSWORD = "Demo12345!";
 
 const DEMO_USERS = [
