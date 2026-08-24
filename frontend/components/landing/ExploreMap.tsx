@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MapEmbed } from "./MapEmbed";
 import { landingColors as c } from "./tokens";
+import type { Listing } from "@/lib/api/listings";
 
 const locations = ["Petaling Jaya", "Subang Jaya", "Shah Alam", "Cheras"];
 
@@ -21,7 +22,7 @@ function LocationChip({ label, active }: { label: string; active: boolean }) {
   );
 }
 
-export function ExploreMap() {
+export function ExploreMap({ listings }: { listings: Listing[] }) {
   return (
     <div style={{ padding: "100px 64px 80px 64px" }}>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
@@ -52,13 +53,15 @@ export function ExploreMap() {
         style={{
           position: "relative",
           width: "100%",
+          maxWidth: 900,
+          margin: "0 auto",
           height: 360,
           borderRadius: 24,
           overflow: "hidden",
           boxShadow: "0 20px 46px rgba(14,13,16,0.1)",
         }}
       >
-        <MapEmbed />
+        <MapEmbed listings={listings} />
         <Button
           asChild
           className="absolute bottom-5 right-6 h-auto gap-1.5 rounded-xl px-[22px] py-3 text-[13px] font-bold"

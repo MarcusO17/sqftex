@@ -8,6 +8,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TrustStrip } from "@/components/landing/TrustStrip";
 import { HostBand } from "@/components/landing/HostBand";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { listListings, type Listing } from "@/lib/api/listings";
 
 const unbounded = Unbounded({
   subsets: ["latin"],
@@ -20,7 +21,28 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export default function Home() {
+// Listings change constantly and there's no live backend at build time in
+// this environment — same reasoning as /listings (see that page).
+export const dynamic = "force-dynamic";
+
+// Public, unauthenticated fetch (no Clerk token) — the landing map is
+// marketing surface, not the gated browse experience. Only live, verified
+// listings with real coordinates are worth plotting; if the API is
+// unreachable the map still renders, just with no pins.
+async function getMapListings(): Promise<Listing[]> {
+  try {
+    const listings = await listListings();
+    return listings.filter(
+      (l) => l.status === "active" && Number.isFinite(l.location_lat) && Number.isFinite(l.location_lng)
+    );
+  } catch {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const mapListings = await getMapListings();
+
   return (
     <div
       className={`${unbounded.variable} ${manrope.variable}`}
@@ -34,7 +56,7 @@ export default function Home() {
       <LandingNav />
       <Hero />
       <QuickCategories />
-      <ExploreMap />
+      <ExploreMap listings={mapListings} />
       <HowItWorks />
       <TrustStrip />
       <HostBand />

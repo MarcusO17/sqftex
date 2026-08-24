@@ -1,33 +1,53 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 
+// Scroll threshold, in pixels, past which the pill switches to its
+// shrunk/compact styling.
+const SHRINK_AT = 24;
+
 export function LandingNav() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > SHRINK_AT);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div
+      className="landing-nav"
       style={{
-        position: "absolute",
-        top: 24,
-        left: 40,
-        right: 40,
-        height: 68,
+        // Always fixed (not absolute) so the pill follows the visitor from
+        // the first pixel of scroll instead of scrolling away with the
+        // hero — see the comment on .landing-nav in LandingStyles.tsx.
+        position: "fixed",
+        top: scrolled ? 12 : 24,
+        left: scrolled ? 16 : 40,
+        right: scrolled ? 16 : 40,
+        height: scrolled ? 52 : 68,
         background: "var(--landing-nav-bg)",
         borderRadius: 999,
-        boxShadow: "0 10px 30px rgba(14,13,16,0.1)",
+        boxShadow: scrolled ? "0 12px 28px rgba(14,13,16,0.16)" : "0 10px 30px rgba(14,13,16,0.1)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 12px 0 26px",
-        zIndex: 5,
+        padding: scrolled ? "0 10px 0 22px" : "0 12px 0 26px",
+        zIndex: 50,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: scrolled ? 32 : 40 }}>
         <Link
           href="/"
           style={{
             fontFamily: "var(--font-landing-heading), sans-serif",
             fontWeight: 700,
-            fontSize: 19,
+            fontSize: scrolled ? 17 : 19,
             color: "var(--landing-ink)",
             letterSpacing: "-0.01em",
           }}

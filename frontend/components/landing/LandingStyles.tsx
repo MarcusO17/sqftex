@@ -66,12 +66,44 @@ const css = `
         --landing-btn-bg: #F5F3EF;
         --landing-btn-text: #0E0D10;
       }
+      /* Smooths the light/dark switch: ThemeToggle flips data-theme
+         instantly, which snaps every --landing-* variable to its new value.
+         The variable swap itself can't be animated, but the properties
+         reading it can — so every element gets its own tween on the color
+         channels, and the CSS-variable change animates through them for
+         free. Landed on * rather than a "landing-page" wrapper class
+         because most of this page's colors are literal inline
+         style={{ background: "var(--landing-*)" }}, not classNames, so a
+         wrapper rule wouldn't reach them. Excludes transform/rotate — those
+         are hover-only affordances, not part of the theme swap, and stay
+         on their own per-element transitions below (a more specific
+         selector's transition shorthand fully overrides this one for that
+         element, which is fine: those elements' colors are literal brand
+         hex, not theme-reactive, so they have nothing here to lose).
+         prefers-reduced-motion turns it off entirely. */
+      *, *::before, *::after {
+        transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease, box-shadow 0.35s ease, fill 0.35s ease, stroke 0.35s ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          transition: none !important;
+        }
+      }
       .landing-navlink {
         transition: color 0.2s ease;
       }
       .landing-navlink:hover { color: var(--landing-ink); }
+      /* LandingNav is always position: fixed (so it follows the visitor on
+         scroll from the very first pixel — an absolute-positioned nav would
+         scroll out of view with the rest of the document before any
+         scroll-based swap to fixed could happen). This transition is what
+         animates its shrink: top/left/right/height/padding aren't colors,
+         so the universal * transition above doesn't reach them. */
+      .landing-nav {
+        transition: top 0.25s ease, left 0.25s ease, right 0.25s ease, height 0.25s ease, padding 0.25s ease, box-shadow 0.3s ease;
+      }
       .landing-theme-toggle {
-        transition: background 0.2s ease, transform 0.2s ease;
+        transition: background 0.2s ease, transform 0.2s ease, color 0.25s ease;
       }
       .landing-theme-toggle:hover {
         background: var(--landing-line);
