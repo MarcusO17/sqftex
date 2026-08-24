@@ -14,13 +14,13 @@ const listingInputSchema = z.object({
   description: z.string().min(1),
   category: z.nativeEnum(ListingCategory),
   size_sqft: z.number().int().positive(),
-  price_cents: z.number().int().positive(),
-  price_unit: z.nativeEnum(PriceUnit),
-  address: z.string().min(1),
+  price_cents: z.number().int().positive().optional(),
+  price_unit: z.nativeEnum(PriceUnit).optional(),
+  address: z.string().min(1).optional(),
   access_rules: z.string().optional().default(""),
   prohibited_items: z.string().optional().default(""),
-  latitude: z.number().min(-90).max(90),
-  longitude: z.number().min(-180).max(180),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
 });
 
 // The zod schema above mirrors the API's snake_case JSON contract, but
@@ -35,12 +35,12 @@ function mapCreateFields(input: z.infer<typeof listingInputSchema>) {
   return {
     ...rest,
     sizeSqft: size_sqft,
-    priceCents: price_cents,
-    priceUnit: price_unit,
+    priceCents: price_cents ?? null,
+    priceUnit: price_unit ?? null,
     accessRules: access_rules,
     prohibitedItems: prohibited_items,
-    lat: latitude,
-    lng: longitude,
+    lat: latitude ?? null,
+    lng: longitude ?? null,
   };
 }
 

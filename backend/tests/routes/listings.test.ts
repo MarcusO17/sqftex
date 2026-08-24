@@ -82,6 +82,30 @@ describe("listings routes", () => {
     });
   });
 
+  it("POST / creates a draft with only category/title/description/size, rest null", async () => {
+    await makeUser("test_listings_draft", "draft@example.com", true);
+    authAs("test_listings_draft", "draft@example.com");
+
+    const res = await request(await createApp()).post("/api/v1/listings/").send({
+      title: "Spare Room",
+      description: "Nice and dry.",
+      category: "spare_room",
+      size_sqft: 120,
+    });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      title: "Spare Room",
+      category: "spare_room",
+      size_sqft: 120,
+      status: "draft",
+      price_cents: null,
+      price_unit: null,
+      address: null,
+      location_lat: null,
+      location_lng: null,
+    });
+  });
+
   it("GET / returns only active listings for an anonymous caller", async () => {
     const owner = await makeUser("test_listings_owner2", "owner2@example.com", true);
     await prisma.listing.create({
