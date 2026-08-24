@@ -8,7 +8,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   const { getToken } = await auth();
   const token = await getToken();
   const listing = await getListing(Number(params.id), token);
-  const ringgit = (listing.price_cents! / 100).toFixed(2);
+  const priceReady = listing.price_cents !== null && listing.price_unit !== null;
+  const ringgit = priceReady && listing.price_cents !== null ? (listing.price_cents / 100).toFixed(2) : null;
   const unitLabel = listing.price_unit === "daily" ? "day" : "month";
 
   return (
@@ -98,7 +99,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   <path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" />
                   <circle cx="12" cy="9" r="2.3" />
                 </svg>
-                {listing.address!} &middot; {listing.size_sqft} sqft
+                {listing.address || "Address not set"} &middot; {listing.size_sqft} sqft
               </div>
             </div>
 
@@ -144,12 +145,18 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
               top: 24,
             }}
           >
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span style={{ fontFamily: "var(--font-heading)", fontSize: 38, fontWeight: 800 }}>
-                RM {ringgit}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 600 }}>/ {unitLabel}</span>
-            </div>
+            {priceReady ? (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                <span style={{ fontFamily: "var(--font-heading)", fontSize: 38, fontWeight: 800 }}>
+                  RM {ringgit}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 600 }}>/ {unitLabel}</span>
+              </div>
+            ) : (
+              <div style={{ fontSize: 15, fontWeight: 500, color: "var(--secondary)" }}>
+                Price not yet set
+              </div>
+            )}
 
             <button className="btn-primary" style={{ width: "100%" }} disabled title="Booking isn't open yet">
               REQUEST TO BOOK
