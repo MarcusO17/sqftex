@@ -105,7 +105,7 @@ export function ListingForm() {
 
       <div className="field">
         <label>Billed</label>
-        <div style={{ display: "flex", border: "2px solid var(--ink)", borderRadius: 2, overflow: "hidden", maxWidth: 280 }}>
+        <div style={{ display: "flex", border: "1px solid var(--ink)", borderRadius: 10, overflow: "hidden", maxWidth: 280 }}>
           <button
             type="button"
             className="seg"

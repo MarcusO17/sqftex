@@ -30,11 +30,22 @@ export default async function NewListingPage() {
               flexDirection: "column",
               gap: 16,
               padding: 32,
-              border: "3px solid var(--ink)",
-              borderRadius: 2,
+              border: "1px solid var(--line)",
+              borderRadius: 16,
+              boxShadow: "0 2px 10px rgba(14,13,16,0.06)",
             }}
           >
-            <div className="label" style={{ color: "var(--secondary-dark)" }}>
+            <div
+              className="label"
+              style={{
+                alignSelf: "flex-start",
+                color: "#fff",
+                background: "var(--secondary)",
+                padding: "6px 12px",
+                borderRadius: 999,
+                transform: "rotate(-3deg)",
+              }}
+            >
               Verification required
             </div>
             <h1 style={{ fontSize: 28 }}>VERIFY YOUR ID TO CONTINUE</h1>

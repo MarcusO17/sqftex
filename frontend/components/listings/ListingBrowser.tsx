@@ -32,7 +32,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
           alignItems: "center",
           gap: 24,
           padding: "24px 64px",
-          borderBottom: "3px solid var(--ink)",
+          borderBottom: "1px solid var(--line)",
           flexWrap: "wrap",
         }}
       >
@@ -57,7 +57,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#141414"
+            stroke="var(--ink)"
             strokeWidth="2"
             style={{ position: "absolute", left: 13 }}
           >
@@ -71,8 +71,8 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             style={{
               fontSize: 14,
               padding: "11px 14px 11px 40px",
-              border: "2px solid var(--line)",
-              borderRadius: 2,
+              border: "1px solid var(--line)",
+              borderRadius: 10,
               width: 260,
               outline: "none",
             }}

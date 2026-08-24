@@ -29,13 +29,14 @@ export function ListingCard({ listing }: { listing: Listing }) {
         onMouseMove={tilt.onMouseMove}
         onMouseEnter={tilt.onMouseEnter}
         onMouseLeave={tilt.onMouseLeave}
-        whileHover={{ boxShadow: "0 18px 34px rgba(20,20,20,0.22)" }}
+        initial={{ boxShadow: "0 2px 10px rgba(14,13,16,0.06)" }}
+        whileHover={{ boxShadow: "0 18px 34px rgba(14,13,16,0.16)" }}
         style={{
           display: "block",
           position: "relative",
           background: "var(--paper)",
-          border: "3px solid var(--ink)",
-          borderRadius: 2,
+          border: "1px solid var(--line)",
+          borderRadius: 14,
           overflow: "hidden",
           transformStyle: "preserve-3d",
           rotateX: tilt.rotateX,
@@ -49,7 +50,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            borderBottom: "3px solid var(--ink)",
+            borderBottom: "1px solid var(--line)",
           }}
         >
           {coverPhoto ? (

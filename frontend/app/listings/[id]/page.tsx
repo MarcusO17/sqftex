@@ -49,8 +49,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                       width: "100%",
                       height: 260,
                       objectFit: "cover",
-                      border: "3px solid var(--ink)",
-                      borderRadius: 2,
+                      border: "1px solid var(--line)",
+                      borderRadius: 14,
                     }}
                   />
                 ))
@@ -59,8 +59,8 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   style={{
                     height: 260,
                     background: "var(--card)",
-                    border: "3px solid var(--ink)",
-                    borderRadius: 2,
+                    border: "1px solid var(--line)",
+                    borderRadius: 14,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -80,7 +80,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 flexDirection: "column",
                 gap: 10,
                 paddingBottom: 24,
-                borderBottom: "3px solid var(--ink)",
+                borderBottom: "1px solid var(--line)",
               }}
             >
               <div className="label" style={{ color: "var(--primary)" }}>
@@ -88,7 +88,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
               </div>
               <h1 style={{ fontSize: 34 }}>{listing.title.toUpperCase()}</h1>
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#141414" strokeWidth="2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2">
                   <path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" />
                   <circle cx="12" cy="9" r="2.3" />
                 </svg>
@@ -102,7 +102,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                 flexDirection: "column",
                 gap: 12,
                 paddingBottom: 24,
-                borderBottom: "3px solid var(--ink)",
+                borderBottom: "1px solid var(--line)",
               }}
             >
               <h3 style={{ fontSize: 19 }}>ABOUT THIS SPACE</h3>
@@ -127,8 +127,9 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           {/* Right: booking card */}
           <div
             style={{
-              border: "3px solid var(--ink)",
-              borderRadius: 2,
+              border: "1px solid var(--line)",
+              borderRadius: 16,
+              boxShadow: "0 2px 10px rgba(14,13,16,0.06)",
               padding: 28,
               display: "flex",
               flexDirection: "column",
@@ -155,7 +156,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
 
             <div
               style={{
-                borderTop: "2px solid var(--line)",
+                borderTop: "1px solid var(--line)",
                 paddingTop: 16,
                 display: "flex",
                 flexDirection: "column",
