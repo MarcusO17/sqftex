@@ -19,9 +19,15 @@
 //
 // A plain <style> tag works fine in a Server Component — no "use client"
 // needed for either the variables or the one hover interaction below.
-export function LandingStyles() {
-  return (
-    <style>{`
+//
+// Rendered via dangerouslySetInnerHTML rather than a JSX text child: React
+// HTML-escapes text children (e.g. the `"` in [data-theme="light"] becomes
+// &quot;), but browsers parse <style> content as raw text and never decode
+// entities inside it — so the escaped server HTML and the unescaped
+// re-render React expects on hydration disagree, throwing a hydration
+// mismatch. dangerouslySetInnerHTML skips React's escaping entirely, which
+// is the correct/recommended way to inject raw CSS text either way.
+const css = `
       :root {
         --landing-paper: #FAFAFB;
         --landing-ink: #0E0D10;
@@ -77,6 +83,8 @@ export function LandingStyles() {
       .landing-category-tile:hover {
         transform: rotate(var(--tile-rotate)) translateY(-6px) scale(1.08);
       }
-    `}</style>
-  );
+    `;
+
+export function LandingStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: css }} />;
 }
