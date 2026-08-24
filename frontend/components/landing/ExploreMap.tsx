@@ -61,9 +61,9 @@ export function ExploreMap({ listings }: { listings: Listing[] }) {
           // internal stacking inside it.
           zIndex: 1,
           width: "100%",
-          maxWidth: 900,
+          maxWidth: 1100,
           margin: "0 auto",
-          height: 360,
+          height: 560,
           borderRadius: 24,
           overflow: "hidden",
           boxShadow: "0 20px 46px rgba(14,13,16,0.1)",
