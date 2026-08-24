@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { landingColors as c } from "./tokens";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function LandingNav() {
   return (
@@ -10,7 +11,7 @@ export function LandingNav() {
         left: 40,
         right: 40,
         height: 68,
-        background: "rgba(255,255,255,0.92)",
+        background: "var(--landing-nav-bg)",
         borderRadius: 999,
         boxShadow: "0 10px 30px rgba(14,13,16,0.1)",
         display: "flex",
@@ -27,7 +28,7 @@ export function LandingNav() {
             fontFamily: "var(--font-landing-heading), sans-serif",
             fontWeight: 700,
             fontSize: 19,
-            color: c.ink,
+            color: "var(--landing-ink)",
             letterSpacing: "-0.01em",
           }}
         >
@@ -37,24 +38,25 @@ export function LandingNav() {
           <a
             href="#how-it-works"
             className="landing-navlink"
-            style={{ color: c.navLink, fontWeight: 600, fontSize: 14.5 }}
+            style={{ color: "var(--landing-nav-link)", fontWeight: 600, fontSize: 14.5 }}
           >
             How it works
           </a>
           <Link
             href="/listings/new"
             className="landing-navlink"
-            style={{ color: c.navLink, fontWeight: 600, fontSize: 14.5 }}
+            style={{ color: "var(--landing-nav-link)", fontWeight: 600, fontSize: 14.5 }}
           >
             List your space
           </Link>
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <ThemeToggle />
         <Link
           href="/login"
           className="landing-navlink"
-          style={{ color: c.navLink, fontWeight: 600, fontSize: 14.5, padding: "0 10px" }}
+          style={{ color: "var(--landing-nav-link)", fontWeight: 600, fontSize: 14.5, padding: "0 10px" }}
         >
           Log in
         </Link>
