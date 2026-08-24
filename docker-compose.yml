@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   db:
-    image: postgis/postgis:16-3.4
+    image: postgres:16
     environment:
       POSTGRES_DB: sqftex
       POSTGRES_USER: sqftex
@@ -16,13 +16,16 @@ services:
       - "6379:6379"
   web:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "npx prisma migrate deploy && npm start"
     volumes:
       - ./backend:/app
+      - /app/node_modules
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://sqftex:sqftex@db:5432/sqftex?schema=public
     depends_on:
       - db
       - redis
