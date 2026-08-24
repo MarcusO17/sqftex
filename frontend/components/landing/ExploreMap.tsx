@@ -52,6 +52,14 @@ export function ExploreMap({ listings }: { listings: Listing[] }) {
       <div
         style={{
           position: "relative",
+          // Leaflet's internal panes (tiles/markers/tooltips/popups) use
+          // z-index values up to 700 — without an explicit z-index here,
+          // `position: relative` alone doesn't open a new stacking context,
+          // so those panes compare directly against the rest of the page
+          // (e.g. the fixed navbar's z-index: 50) and can render on top of
+          // it. Giving this wrapper its own z-index traps all of Leaflet's
+          // internal stacking inside it.
+          zIndex: 1,
           width: "100%",
           maxWidth: 900,
           margin: "0 auto",
