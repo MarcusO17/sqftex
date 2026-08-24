@@ -82,6 +82,16 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         float: "float 4.5s ease-in-out infinite",
       },
+      // Named instead of used as Tailwind arbitrary values (`duration-[220ms]`,
+      // `ease-[cubic-bezier(...)]`) — those bracket forms are ambiguous
+      // (they match more than one utility group) and Tailwind warns on
+      // every build. Used by Button's hover/press scale (see button.tsx).
+      transitionDuration: {
+        220: "220ms",
+      },
+      transitionTimingFunction: {
+        "bounce-smooth": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

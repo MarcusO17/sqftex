@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { landingColors as c } from "./tokens";
+import { useTiltEffect, TiltGlare } from "@/components/ui/tilt";
 
 type FeatureCard = {
   id: number;
@@ -75,74 +76,107 @@ export function HeroFeatureCard() {
   }
 
   return (
-    <div style={{ position: "relative", zIndex: 1, width: 480, height: 520 }}>
-      {cards.map((card, index) => {
-        const isFront = index === 0;
-        const fan = fanTransform(index);
-        return (
-          <motion.div
-            key={card.id}
-            onClick={isFront ? advance : undefined}
-            animate={{
-              top: index * -CARD_OFFSET,
-              x: fan.x,
-              rotate: fan.rotate,
-              scale: 1 - index * SCALE_FACTOR,
-              zIndex: cards.length - index,
-            }}
-            transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            whileHover={isFront ? { scale: 1 - index * SCALE_FACTOR + 0.015 } : undefined}
-            whileTap={isFront ? { scale: 1 - index * SCALE_FACTOR - 0.02 } : undefined}
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              transformOrigin: "bottom center",
-              width: 480,
-              height: 480,
-              borderRadius: 28,
-              background: card.bg,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-end",
-              padding: 40,
-              boxShadow: "0 30px 70px rgba(14,13,16,0.28)",
-              cursor: isFront ? "pointer" : "default",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "var(--font-landing-heading), sans-serif",
-                fontWeight: 700,
-                fontSize: 44,
-                color: "#FFFFFF",
-                lineHeight: 1.1,
-              }}
-            >
-              {card.title}
-            </span>
-            <span style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.85)", marginTop: 12 }}>
-              {card.body}
-            </span>
-            {isFront && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: 20,
-                  right: 24,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "rgba(255,255,255,0.7)",
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Tap to flip &rarr;
-              </span>
-            )}
-          </motion.div>
-        );
-      })}
+    <div style={{ position: "relative", zIndex: 1, width: 480, height: 520, perspective: 1400 }}>
+      {cards.map((card, index) => (
+        <StackCard
+          key={card.id}
+          card={card}
+          index={index}
+          isFront={index === 0}
+          totalCards={cards.length}
+          onAdvance={advance}
+        />
+      ))}
     </div>
+  );
+}
+
+function StackCard({
+  card,
+  index,
+  isFront,
+  totalCards,
+  onAdvance,
+}: {
+  card: FeatureCard;
+  index: number;
+  isFront: boolean;
+  totalCards: number;
+  onAdvance: () => void;
+}) {
+  const fan = fanTransform(index);
+  // Only the front card is interactive, so it's the only one that gets the
+  // shiny-tilt treatment — the peeking cards behind it stay flat.
+  const tilt = useTiltEffect<HTMLDivElement>(9);
+
+  return (
+    <motion.div
+      ref={isFront ? tilt.ref : undefined}
+      onClick={isFront ? onAdvance : undefined}
+      onMouseMove={isFront ? tilt.onMouseMove : undefined}
+      onMouseEnter={isFront ? tilt.onMouseEnter : undefined}
+      onMouseLeave={isFront ? tilt.onMouseLeave : undefined}
+      animate={{
+        top: index * -CARD_OFFSET,
+        x: fan.x,
+        rotate: fan.rotate,
+        scale: 1 - index * SCALE_FACTOR,
+        zIndex: totalCards - index,
+      }}
+      transition={{ type: "spring", stiffness: 260, damping: 24 }}
+      whileHover={isFront ? { scale: 1 - index * SCALE_FACTOR + 0.015 } : undefined}
+      whileTap={isFront ? { scale: 1 - index * SCALE_FACTOR - 0.02 } : undefined}
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        transformOrigin: "bottom center",
+        transformStyle: "preserve-3d",
+        width: 480,
+        height: 480,
+        borderRadius: 28,
+        background: card.bg,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        padding: 40,
+        boxShadow: "0 30px 70px rgba(14,13,16,0.28)",
+        cursor: isFront ? "pointer" : "default",
+        rotateX: isFront ? tilt.rotateX : 0,
+        rotateY: isFront ? tilt.rotateY : 0,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "var(--font-landing-heading), sans-serif",
+          fontWeight: 700,
+          fontSize: 44,
+          color: "#FFFFFF",
+          lineHeight: 1.1,
+        }}
+      >
+        {card.title}
+      </span>
+      <span style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.85)", marginTop: 12 }}>
+        {card.body}
+      </span>
+      {isFront && (
+        <span
+          style={{
+            position: "absolute",
+            top: 20,
+            right: 24,
+            fontSize: 12,
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.7)",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+          }}
+        >
+          Tap to flip &rarr;
+        </span>
+      )}
+      {isFront && <TiltGlare handle={tilt} />}
+    </motion.div>
   );
 }

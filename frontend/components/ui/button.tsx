@@ -8,10 +8,16 @@ import { cn } from "@/lib/utils";
 // scale-on-hover/active transform (see the base classes below) so buttons
 // across the app get a consistent, tasteful hover animation for free
 // instead of each call site reinventing one.
+//
+// Easing is a custom back-out curve (slight overshoot past the target scale
+// before settling) rather than plain `ease-out` — a linear-ish ease at
+// 150ms reads as an abrupt snap. 220ms + overshoot keeps the playful
+// "pop" but glides into it instead of twitching. The press-down (active)
+// stays snappier than the release so clicks still feel immediate.
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium " +
-    "transition-[transform,background-color,color,box-shadow] duration-150 ease-out " +
-    "hover:scale-[1.03] active:scale-[0.97] " +
+    "transition-[transform,background-color,color,box-shadow] duration-220 ease-bounce-smooth " +
+    "hover:scale-[1.03] active:scale-[0.97] active:duration-100 " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
     "disabled:pointer-events-none disabled:opacity-50 disabled:hover:scale-100",
   {
