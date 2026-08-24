@@ -102,7 +102,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
           {filtered.length === 0 ? (
             <p style={{ fontSize: 15 }}>No listings match your filters.</p>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 24 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
               {filtered.map((listing) => (
                 <ListingCard key={listing.id} listing={listing} focused={listing.id === focusedId} />
               ))}

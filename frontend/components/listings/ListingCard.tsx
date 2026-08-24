@@ -9,6 +9,11 @@ import { useTiltEffect, TiltGlare } from "@/components/ui/tilt";
 
 const MotionLink = motion(Link);
 
+// Horizontal row (photo left, full details right) — sized for a
+// single-column list, not a multi-column grid; see ListingBrowser, which
+// now stacks these instead of a card grid, to leave room for the map on
+// the right of that page.
+//
 // `id` matches what the map's pin-click focus (ListingBrowser) scrolls to
 // and `focused` is the highlight that follows — see ListingBrowser.tsx.
 export function ListingCard({ listing, focused }: { listing: Listing; focused?: boolean }) {
@@ -32,7 +37,8 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
         }}
         whileHover={{ boxShadow: "0 18px 34px rgba(14,13,16,0.16)" }}
         style={{
-          display: "block",
+          display: "flex",
+          flexDirection: "row",
           position: "relative",
           background: "var(--paper)",
           border: focused ? "1px solid var(--primary)" : "1px solid var(--line)",
@@ -45,12 +51,14 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
       >
         <div
           style={{
-            height: 160,
+            width: 260,
+            minWidth: 260,
+            alignSelf: "stretch",
             background: "var(--card)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            borderBottom: "1px solid var(--line)",
+            borderRight: "1px solid var(--line)",
           }}
         >
           {coverPhoto ? (
@@ -67,15 +75,50 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
             </svg>
           )}
         </div>
-        <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 6 }}>
-          <div className="label" style={{ color: "var(--primary)" }}>
-            {categoryLabel(listing.category)}
+
+        <div style={{ flex: 1, minWidth: 0, padding: 22, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
+              <div className="label" style={{ color: "var(--primary)" }}>
+                {categoryLabel(listing.category)}
+              </div>
+              <h3 style={{ fontSize: 19 }}>{listing.title}</h3>
+            </div>
+            <div style={{ textAlign: "right", flexShrink: 0 }}>
+              <div style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontWeight: 800, color: "var(--ink)" }}>
+                {formatPrice(listing)}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "hsl(var(--muted-foreground))", marginTop: 2 }}>
+                {listing.size_sqft} sqft
+              </div>
+            </div>
           </div>
-          <h3 style={{ fontSize: 17 }}>{listing.title}</h3>
-          <p style={{ fontSize: 14, fontWeight: 500 }}>{listing.address}</p>
-          <p style={{ fontSize: 14, fontWeight: 600, marginTop: 6 }}>
-            {listing.size_sqft} sqft &middot; {formatPrice(listing)}
-          </p>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" strokeWidth="2" style={{ flexShrink: 0 }}>
+              <path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" />
+              <circle cx="12" cy="9" r="2.3" />
+            </svg>
+            {listing.address}
+          </div>
+
+          {listing.description && (
+            <p
+              style={{
+                fontSize: 14,
+                lineHeight: 1.6,
+                color: "var(--ink)",
+                opacity: 0.75,
+                marginTop: 2,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {listing.description}
+            </p>
+          )}
         </div>
         <TiltGlare handle={tilt} />
       </MotionLink>
