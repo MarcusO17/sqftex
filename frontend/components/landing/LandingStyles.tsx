@@ -113,7 +113,41 @@ const css = `
         transition: transform 0.25s ease;
       }
       .landing-category-tile:hover {
-        transform: rotate(var(--tile-rotate)) translateY(-6px) scale(1.08);
+        animation: landing-tile-hop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      @keyframes landing-tile-hop {
+        0% { transform: rotate(var(--tile-rotate)) translateY(0) scale(1); }
+        30% { transform: rotate(calc(var(--tile-rotate) - 12deg)) translateY(-16px) scale(1.16); }
+        55% { transform: rotate(calc(var(--tile-rotate) + 9deg)) translateY(-3px) scale(1.04); }
+        75% { transform: rotate(calc(var(--tile-rotate) - 5deg)) translateY(-10px) scale(1.11); }
+        100% { transform: rotate(var(--tile-rotate)) translateY(-6px) scale(1.08); }
+      }
+      /* Icon square gets its own shimmy, independent of (and layered on
+         top of) the tile's rotation above, so the whole tile hops while
+         the icon inside it wiggles like it's excited to be clicked. */
+      .landing-category-tile:hover > div {
+        animation: landing-icon-shimmy 0.55s ease-in-out;
+      }
+      @keyframes landing-icon-shimmy {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(-10deg) scale(1.08); }
+        50% { transform: rotate(7deg) scale(0.94); }
+        75% { transform: rotate(-5deg) scale(1.04); }
+      }
+      .landing-category-tile:hover span {
+        animation: landing-label-pop 0.55s ease-in-out;
+      }
+      @keyframes landing-label-pop {
+        0%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-3px); }
+        70% { transform: translateY(1px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .landing-category-tile:hover,
+        .landing-category-tile:hover > div,
+        .landing-category-tile:hover span {
+          animation: none;
+        }
       }
     `;
 
