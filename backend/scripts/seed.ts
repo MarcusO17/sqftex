@@ -15,6 +15,7 @@ const DEMO_USERS = [
   { key: "host.jane", isVerified: true, password: "HostJane2026!" },
   { key: "host.ravi", isVerified: true, password: "HostRavi2026!" },
   { key: "host.pending", isVerified: false, password: "HostPending2026!" },
+  { key: "host.lim", isVerified: true, password: "HostLim2026!" },
   { key: "renter.mei", isVerified: true, password: "RenterMei2026!" },
   { key: "renter.arif", isVerified: true, password: "RenterArif2026!" },
 ] as const;
@@ -44,6 +45,10 @@ const DEMO_LISTINGS: ListingSeed[] = [
   { owner: "host.ravi", title: "Shoplot Back Room, Klang", category: "shoplot_back_room", sizeSqft: 200, priceCents: 35000, priceUnit: "monthly", status: "active", address: "Batu Unjur, Klang, Selangor", lat: 3.0333, lng: 101.4500, photoUrl: "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=1200&auto=format&fit=crop" },
   { owner: "host.ravi", title: "Warehouse Bay, Shah Alam", category: "warehouse_bay", sizeSqft: 1500, priceCents: 180000, priceUnit: "monthly", status: "active", address: "Seksyen 15, Shah Alam, Selangor", lat: 3.0654, lng: 101.5178, photoUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop" },
   { owner: "host.ravi", title: "Half Warehouse Bay, Cheras", category: "warehouse_bay", sizeSqft: 900, priceCents: 3500, priceUnit: "daily", status: "active", address: "Taman Segar, Cheras, Kuala Lumpur", lat: 3.0980, lng: 101.7360, photoUrl: "https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop" },
+  // Penang — the previous set was all Klang Valley.
+  { owner: "host.lim", title: "Heritage Shophouse Storeroom, George Town", category: "shoplot_back_room", sizeSqft: 150, priceCents: 25000, priceUnit: "monthly", status: "active", address: "Lebuh Chulia, George Town, Penang", lat: 5.4164, lng: 100.3327, photoUrl: "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.lim", title: "Garage Bay, Bayan Baru", category: "garage", sizeSqft: 260, priceCents: 40000, priceUnit: "monthly", status: "active", address: "Bayan Baru, Bayan Lepas, Penang", lat: 5.3325, lng: 100.3070, photoUrl: "https://images.unsplash.com/photo-1548343361-02248be15911?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.lim", title: "Warehouse Bay, Perai Industrial Estate", category: "warehouse_bay", sizeSqft: 1200, priceCents: 150000, priceUnit: "monthly", status: "active", address: "Perai Industrial Estate, Perai, Penang", lat: 5.3841, lng: 100.3838, photoUrl: "https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop" },
 ];
 
 async function findOrCreateClerkUser(email: string, password: string) {

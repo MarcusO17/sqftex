@@ -72,14 +72,20 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
         }}
       >
         {/* The one wonky move: the photo sits a hair off-square, floating
-            on its own shadow, while the rest of the card stays precise. */}
-        <div
+            on its own shadow, while the rest of the card stays precise. It
+            also pops slightly when this listing is the one focused from a
+            map-pin click — a spring rather than a plain ease so it actually
+            reads as a "pop", not just a resize. */}
+        <motion.div
+          initial={false}
+          animate={{ scale: focused ? 1.06 : 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           style={{
             width: 232,
             minWidth: 232,
             height: 168,
             position: "relative",
-            transform: "rotate(-2deg)",
+            rotate: -2,
             borderRadius: 12,
             overflow: "hidden",
             background: "var(--card)",
@@ -101,7 +107,7 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
               </svg>
             </div>
           )}
-        </div>
+        </motion.div>
 
         <div style={{ flex: 1, minWidth: 0, padding: "10px 10px 10px 0", display: "flex", flexDirection: "column", gap: 6 }}>
           <div className="label" style={{ color: "var(--primary)" }}>
