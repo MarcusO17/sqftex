@@ -618,7 +618,7 @@ const css = `
 
   .wizard-topbar { grid-area: top; display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(24px, 4vw, 56px) 0; }
   .wizard-wordmark { font-family: var(--font-heading); font-weight: 800; font-size: 14px; }
-  .wizard-stepcount { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .wizard-stepcount { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 
   .wizard-illustration { grid-area: illus; position: relative; overflow: hidden; border-right: 1px solid var(--line); display: flex; align-items: center; justify-content: center; background: var(--card); }
   .wizard-scene { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s ease; }
@@ -652,7 +652,7 @@ const css = `
   .wizard-tag { display: inline-block; background: var(--secondary); color: #fff; padding: 5px 13px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; transform: rotate(-2deg); margin-bottom: 16px; }
   .wizard-tag.wizard-tag-alt { background: var(--primary); }
   .wizard-title { font-family: var(--font-heading); font-weight: 800; margin: 0 0 10px; font-size: clamp(24px, 3vw, 36px); line-height: 1.1; letter-spacing: -.01em; }
-  .wizard-sub { margin: 0 0 26px; font-size: 14.5px; color: var(--muted); line-height: 1.55; max-width: 46ch; }
+  .wizard-sub { margin: 0 0 26px; font-size: 14.5px; color: hsl(var(--muted-foreground)); line-height: 1.55; max-width: 46ch; }
 
   .wizard-catgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .wizard-cattile { border: 1.5px solid var(--line); border-radius: 14px; padding: 16px; font-size: 13.5px; font-weight: 700; background: var(--paper); cursor: pointer; text-align: left; color: var(--ink); display: flex; align-items: center; gap: 10px; transition: border-color .2s, background-color .2s, box-shadow .2s; font-family: inherit; }
@@ -669,7 +669,7 @@ const css = `
   .wizard-slider-track:has(.wizard-slider-thumb.wizard-dragging) .wizard-slider-fill { transition: none; }
   .wizard-slider-bubble { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); font-size: 11.5px; font-weight: 800; padding: 4px 9px; border-radius: 7px; white-space: nowrap; opacity: 0; pointer-events: none; font-variant-numeric: tabular-nums; transition: opacity .18s ease; }
   .wizard-slider-bubble.wizard-show { opacity: 1; }
-  .wizard-slider-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-top: 9px; font-variant-numeric: tabular-nums; }
+  .wizard-slider-scale { display: flex; justify-content: space-between; font-size: 10.5px; color: hsl(var(--muted-foreground)); margin-top: 9px; font-variant-numeric: tabular-nums; }
 
   .wizard-bottombar { grid-area: bottom; display: flex; justify-content: space-between; align-items: center; padding: 20px clamp(24px, 4vw, 56px) 34px; border-top: 1px solid var(--line); background: var(--paper); }
 
@@ -981,10 +981,10 @@ const SCENES: { cat: string; render: () => JSX.Element }[] = [
     render: () => (
       <>
         <rect x="215" y="20" width="65" height="185" fill="none" stroke="var(--line)" strokeWidth="4" />
-        <line x1="20" y1="200" x2="20" y2="40" stroke="var(--muted)" strokeWidth="6" />
-        <line x1="70" y1="200" x2="70" y2="40" stroke="var(--muted)" strokeWidth="6" />
-        <line x1="20" y1="80" x2="70" y2="80" stroke="var(--muted)" strokeWidth="5" />
-        <line x1="20" y1="140" x2="70" y2="140" stroke="var(--muted)" strokeWidth="5" />
+        <line x1="20" y1="200" x2="20" y2="40" stroke="hsl(var(--muted-foreground))" strokeWidth="6" />
+        <line x1="70" y1="200" x2="70" y2="40" stroke="hsl(var(--muted-foreground))" strokeWidth="6" />
+        <line x1="20" y1="80" x2="70" y2="80" stroke="hsl(var(--muted-foreground))" strokeWidth="5" />
+        <line x1="20" y1="140" x2="70" y2="140" stroke="hsl(var(--muted-foreground))" strokeWidth="5" />
         <rect x="26" y="88" width="38" height="26" fill="var(--secondary)" />
         <rect x="26" y="148" width="38" height="26" fill="var(--primary)" />
         <rect x="95" y="165" width="40" height="40" fill="var(--secondary)" />
@@ -1517,7 +1517,7 @@ export function NewListingWizard() {
       <div style={{ display: "flex", justifyContent: "center", padding: "96px 32px" }}>
         <div style={{ maxWidth: 420, display: "flex", flexDirection: "column", gap: 16, textAlign: "center" }}>
           <h1 style={{ fontSize: 26 }}>Continue where you left off?</h1>
-          <p style={{ color: "var(--muted)" }}>
+          <p style={{ color: "hsl(var(--muted-foreground))" }}>
             You have an unfinished listing: <strong>{resumeDraft.title}</strong>
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
@@ -2012,7 +2012,7 @@ export function PhotoUploader({
         onClick={() => inputRef.current?.click()}
         style={{
           width: 78, height: 78, borderRadius: 11, border: "1.5px dashed var(--line)",
-          background: "none", cursor: "pointer", fontSize: 11, color: "var(--muted)",
+          background: "none", cursor: "pointer", fontSize: 11, color: "hsl(var(--muted-foreground))",
         }}
       >
         + Add
@@ -2146,7 +2146,7 @@ export function ReviewStep({
         value={photoCount === 1 ? "1 photo attached" : `${photoCount} photos attached`}
         onEdit={() => onEditStep(4)}
       />
-      {publishing && <p style={{ marginTop: 16, color: "var(--muted)" }}>Publishing…</p>}
+      {publishing && <p style={{ marginTop: 16, color: "hsl(var(--muted-foreground))" }}>Publishing…</p>}
     </div>
   );
 }
@@ -2160,7 +2160,7 @@ function ReviewRow({ label, value, onEdit }: { label: string; value: string; onE
       }}
     >
       <div>
-        <b style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", color: "var(--muted)", marginBottom: 4, fontWeight: 800, letterSpacing: "0.03em" }}>
+        <b style={{ display: "block", fontSize: 10.5, textTransform: "uppercase", color: "hsl(var(--muted-foreground))", marginBottom: 4, fontWeight: 800, letterSpacing: "0.03em" }}>
           {label}
         </b>
         {value}
