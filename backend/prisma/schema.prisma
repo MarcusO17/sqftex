@@ -75,11 +75,11 @@ model Listing {
   description     String
   category        ListingCategory
   sizeSqft        Int
-  priceCents      Int
-  priceUnit       PriceUnit
-  lat             Float
-  lng             Float
-  address         String
+  priceCents      Int?
+  priceUnit       PriceUnit?
+  lat             Float?
+  lng             Float?
+  address         String?
   accessRules     String   @default("")
   prohibitedItems String   @default("")
   status          ListingStatus @default(draft)

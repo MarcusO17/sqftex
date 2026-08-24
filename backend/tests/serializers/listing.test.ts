@@ -51,3 +51,23 @@ describe("toListingJSON", () => {
     });
   });
 });
+
+describe("toListingJSON with a draft (unset) listing", () => {
+  it("passes through nulls for fields the wizard hasn't collected yet", () => {
+    const draft: Listing = {
+      ...baseListing,
+      priceCents: null,
+      priceUnit: null,
+      lat: null,
+      lng: null,
+      address: null,
+      status: "draft",
+    };
+    const json = toListingJSON({ ...draft, photos: [] });
+    expect(json.price_cents).toBeNull();
+    expect(json.price_unit).toBeNull();
+    expect(json.location_lat).toBeNull();
+    expect(json.location_lng).toBeNull();
+    expect(json.address).toBeNull();
+  });
+});
