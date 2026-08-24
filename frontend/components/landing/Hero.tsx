@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { HeroFeatureCard } from "./HeroFeatureCard";
 import { landingColors as c } from "./tokens";
 
 export function Hero() {
@@ -107,7 +108,7 @@ export function Hero() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: 760,
+          height: 800,
         }}
       >
         <span
@@ -125,36 +126,7 @@ export function Hero() {
           SQFT
         </span>
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 1,
-            width: 420,
-            height: 460,
-            borderRadius: 28,
-            background: c.accent,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
-            padding: 32,
-            boxShadow: "0 30px 70px rgba(8,145,178,0.25)",
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "var(--font-landing-heading), sans-serif",
-              fontWeight: 700,
-              fontSize: 40,
-              color: "#FFFFFF",
-              lineHeight: 1.1,
-            }}
-          >
-            No lease.
-          </span>
-          <span style={{ fontSize: 15, fontWeight: 600, color: "#CFF0F6", marginTop: 10 }}>
-            Book any space by the day or the month &mdash; cancel anytime.
-          </span>
-        </div>
+        <HeroFeatureCard />
 
         {/* animate-float (tailwind.config.ts) bobs each badge on the
             translateY axis while `--sticker-rotate` (set per-badge below)
