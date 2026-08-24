@@ -31,7 +31,10 @@ const items = [
 
 export function TrustStrip() {
   return (
-    <div style={{ padding: "0 64px 72px 64px", display: "flex", justifyContent: "center", gap: 56, flexWrap: "wrap" }}>
+    <div
+      className="mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-16"
+      style={{ paddingBottom: 72, display: "flex", justifyContent: "center", gap: 56, flexWrap: "wrap" }}
+    >
       {items.map((item) => (
         <div
           key={item.label}

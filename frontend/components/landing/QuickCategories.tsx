@@ -54,7 +54,10 @@ function CategoryTile({
 
 export function QuickCategories() {
   return (
-    <div style={{ display: "flex", gap: 34, padding: "64px 64px 0 64px", alignItems: "flex-start", flexWrap: "wrap" }}>
+    <div
+      className="mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-16"
+      style={{ display: "flex", gap: 34, paddingTop: 64, alignItems: "flex-start", flexWrap: "wrap" }}
+    >
       <CategoryTile href="/listings" color={c.categoryStorage} rotate="-4deg" marginTop={0} label="Storage Room">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8">
           <rect x="3" y="9" width="18" height="12" rx="2" />

@@ -97,10 +97,10 @@ const css = `
          scroll from the very first pixel — an absolute-positioned nav would
          scroll out of view with the rest of the document before any
          scroll-based swap to fixed could happen). This transition is what
-         animates its shrink: top/left/right/height/padding aren't colors,
-         so the universal * transition above doesn't reach them. */
+         animates its shrink: top/width/height/padding aren't colors, so
+         the universal * transition above doesn't reach them. */
       .landing-nav {
-        transition: top 0.25s ease, left 0.25s ease, right 0.25s ease, height 0.25s ease, padding 0.25s ease, box-shadow 0.3s ease;
+        transition: top 0.25s ease, width 0.25s ease, height 0.25s ease, padding 0.25s ease, box-shadow 0.3s ease;
       }
       .landing-theme-toggle {
         transition: background 0.2s ease, transform 0.2s ease, color 0.25s ease;

@@ -5,7 +5,10 @@ import { landingColors as c } from "./tokens";
 
 export function Hero() {
   return (
-    <div style={{ padding: "208px 64px 0 64px", display: "flex", gap: 56, alignItems: "center", flexWrap: "wrap" }}>
+    <div
+      className="mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-16"
+      style={{ paddingTop: 208, display: "flex", gap: 56, alignItems: "center", flexWrap: "wrap" }}
+    >
       <div style={{ flex: "1 1 480px", display: "flex", flexDirection: "column", gap: 24 }}>
         <div
           style={{

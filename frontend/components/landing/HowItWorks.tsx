@@ -35,7 +35,11 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <div id="how-it-works" style={{ padding: "100px 64px 80px 64px" }}>
+    <div
+      id="how-it-works"
+      className="mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-16"
+      style={{ paddingTop: 100, paddingBottom: 80 }}
+    >
       <h2
         style={{
           fontFamily: "var(--font-landing-heading), sans-serif",

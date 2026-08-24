@@ -28,8 +28,13 @@ export function LandingNav() {
         // hero — see the comment on .landing-nav in LandingStyles.tsx.
         position: "fixed",
         top: scrolled ? 12 : 24,
-        left: scrolled ? 16 : 40,
-        right: scrolled ? 16 : 40,
+        left: "50%",
+        // Same edge insets as before (16px scrolled / 40px resting) on
+        // typical viewports, but capped at 1440px so the pill doesn't
+        // stretch full-bleed on very wide screens — matches the
+        // max-w-[1440px] container every other section uses.
+        width: scrolled ? "min(calc(100% - 32px), 1440px)" : "min(calc(100% - 80px), 1440px)",
+        transform: "translateX(-50%)",
         height: scrolled ? 52 : 68,
         background: "var(--landing-nav-bg)",
         borderRadius: 999,
