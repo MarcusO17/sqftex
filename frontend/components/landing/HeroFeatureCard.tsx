@@ -106,16 +106,19 @@ function StackCard({
 }) {
   const fan = fanTransform(index);
   // Only the front card is interactive, so it's the only one that gets the
-  // shiny-tilt treatment — the peeking cards behind it stay flat.
+  // shiny-tilt treatment — but only the front card gets the glare (an
+  // interactive cue, kept off the non-clickable peeking cards) and click
+  // handling; the mouse tracking that drives it is cheap (transform-only),
+  // so there's no cost to leaving it on for every card.
   const tilt = useTiltEffect<HTMLDivElement>(9);
 
   return (
     <motion.div
-      ref={isFront ? tilt.ref : undefined}
+      ref={tilt.ref}
       onClick={isFront ? onAdvance : undefined}
-      onMouseMove={isFront ? tilt.onMouseMove : undefined}
-      onMouseEnter={isFront ? tilt.onMouseEnter : undefined}
-      onMouseLeave={isFront ? tilt.onMouseLeave : undefined}
+      onMouseMove={tilt.onMouseMove}
+      onMouseEnter={tilt.onMouseEnter}
+      onMouseLeave={tilt.onMouseLeave}
       animate={{
         top: index * -CARD_OFFSET,
         x: fan.x,
@@ -135,6 +138,7 @@ function StackCard({
         width: 480,
         height: 480,
         borderRadius: 28,
+        overflow: "hidden",
         background: card.bg,
         display: "flex",
         flexDirection: "column",
@@ -142,8 +146,8 @@ function StackCard({
         padding: 40,
         boxShadow: "0 30px 70px rgba(14,13,16,0.28)",
         cursor: isFront ? "pointer" : "default",
-        rotateX: isFront ? tilt.rotateX : 0,
-        rotateY: isFront ? tilt.rotateY : 0,
+        rotateX: tilt.rotateX,
+        rotateY: tilt.rotateY,
       }}
     >
       <span

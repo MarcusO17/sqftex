@@ -12,6 +12,19 @@ import type { Listing } from "@/lib/api/listings";
 const DEFAULT_CENTER: [number, number] = [3.1, 101.62];
 const DEFAULT_ZOOM = 11;
 
+// MapTiler's "Streets" raster tiles when a key is configured (OSM's own
+// tile servers explicitly disallow this kind of production/bulk use —
+// https://operations.osmfoundation.org/policies/tiles/ — MapTiler is the
+// proper provider for that). Falls back to plain OSM tiles so local dev
+// without a key still renders a map.
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY;
+const TILE_URL = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`
+  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION = MAPTILER_KEY
+  ? '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+  : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
 type Pin = { id: number; lat: number; lng: number; label: string; primary?: boolean };
 
 function listingsToPins(listings: Listing[]): Pin[] {
@@ -84,10 +97,7 @@ export function LeafletMap({ listings }: { listings: Listing[] }) {
       {/* Required OSM attribution, moved to bottom-left so it doesn't sit
           under the "Browse full map" button pinned at bottom-right. */}
       <AttributionControl position="bottomleft" />
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+      <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
       {pins.map((pin) => (
         <Marker
           key={pin.id}
