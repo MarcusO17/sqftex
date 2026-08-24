@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { landingColors as c } from "./tokens";
 
 export function Hero() {
@@ -85,22 +86,12 @@ export function Hero() {
               background: "transparent",
             }}
           />
-          <button
+          <Button
             type="submit"
-            style={{
-              background: "var(--landing-btn-bg)",
-              color: "var(--landing-btn-text)",
-              fontWeight: 700,
-              fontSize: 14,
-              padding: "12px 22px",
-              borderRadius: 9,
-              border: "none",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}
+            className="h-auto whitespace-nowrap rounded-[9px] bg-[var(--landing-btn-bg)] px-[22px] py-3 text-sm font-bold text-[var(--landing-btn-text)] [font-family:inherit] hover:bg-[var(--landing-btn-bg)] hover:opacity-90"
           >
             Search
-          </button>
+          </Button>
         </form>
 
         <Link href="/listings/new" style={{ fontSize: 14, color: "var(--landing-muted)", fontWeight: 600, marginTop: 8 }}>
@@ -165,7 +156,13 @@ export function Hero() {
           </span>
         </div>
 
+        {/* animate-float (tailwind.config.ts) bobs each badge on the
+            translateY axis while `--sticker-rotate` (set per-badge below)
+            supplies the fixed tilt, so the idle motion doesn't fight the
+            poster-sticker rotation. Staggered animationDelay keeps the
+            three from bobbing in unison. */}
         <div
+          className="animate-float"
           style={{
             position: "absolute",
             top: 26,
@@ -178,12 +175,14 @@ export function Hero() {
             padding: "10px 16px",
             borderRadius: 10,
             boxShadow: "0 12px 26px rgba(14,13,16,0.22)",
-            transform: "rotate(-8deg)",
+            ["--sticker-rotate" as string]: "rotate(-8deg)",
+            animationDelay: "0s",
           }}
         >
           Storage Room
         </div>
         <div
+          className="animate-float"
           style={{
             position: "absolute",
             top: 180,
@@ -196,12 +195,14 @@ export function Hero() {
             padding: "10px 16px",
             borderRadius: 10,
             boxShadow: "0 12px 26px rgba(14,13,16,0.18)",
-            transform: "rotate(6deg)",
+            ["--sticker-rotate" as string]: "rotate(6deg)",
+            animationDelay: "1.1s",
           }}
         >
           Garage Bay
         </div>
         <div
+          className="animate-float"
           style={{
             position: "absolute",
             bottom: 8,
@@ -214,7 +215,8 @@ export function Hero() {
             padding: "10px 16px",
             borderRadius: 10,
             boxShadow: "0 12px 26px rgba(14,13,16,0.18)",
-            transform: "rotate(-4deg)",
+            ["--sticker-rotate" as string]: "rotate(-4deg)",
+            animationDelay: "2.2s",
           }}
         >
           Warehouse

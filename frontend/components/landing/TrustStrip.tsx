@@ -33,7 +33,11 @@ export function TrustStrip() {
   return (
     <div style={{ padding: "0 64px 72px 64px", display: "flex", justifyContent: "center", gap: 56, flexWrap: "wrap" }}>
       {items.map((item) => (
-        <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, color: "var(--landing-ink)", fontWeight: 600 }}>
+        <div
+          key={item.label}
+          className="transition-transform duration-200 ease-out hover:-translate-y-1"
+          style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14.5, color: "var(--landing-ink)", fontWeight: 600 }}
+        >
           {item.icon}
           {item.label}
         </div>

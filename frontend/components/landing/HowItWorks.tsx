@@ -66,7 +66,18 @@ export function HowItWorks() {
             >
               {step.icon}
             </div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--landing-ink)", margin: 0 }}>{step.title}</h3>
+            <h3
+              style={{
+                fontFamily: "var(--font-landing-heading), sans-serif",
+                fontSize: 16,
+                fontWeight: 700,
+                color: "var(--landing-ink)",
+                letterSpacing: "normal",
+                margin: 0,
+              }}
+            >
+              {step.title}
+            </h3>
             <p style={{ fontSize: 14.5, lineHeight: 1.6, color: "var(--landing-muted)", margin: 0 }}>{step.body}</p>
           </div>
         ))}

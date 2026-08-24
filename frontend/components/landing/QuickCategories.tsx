@@ -20,6 +20,7 @@ function CategoryTile({
   return (
     <Link
       href={href}
+      className="landing-category-tile"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -27,6 +28,9 @@ function CategoryTile({
         gap: 8,
         transform: `rotate(${rotate})`,
         marginTop,
+        // Read by the .landing-category-tile:hover rule in LandingStyles.tsx
+        // so hover can add lift/scale without dropping this base rotation.
+        ["--tile-rotate" as string]: rotate,
       }}
     >
       <div

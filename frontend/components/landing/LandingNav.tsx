@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function LandingNav() {
@@ -59,19 +60,12 @@ export function LandingNav() {
         >
           Log in
         </Link>
-        <Link
-          href="/listings"
-          style={{
-            background: "var(--landing-btn-bg)",
-            color: "var(--landing-btn-text)",
-            fontWeight: 700,
-            fontSize: 14,
-            padding: "12px 22px",
-            borderRadius: 10,
-          }}
+        <Button
+          asChild
+          className="h-auto rounded-[10px] bg-[var(--landing-btn-bg)] px-[22px] py-3 text-sm font-bold text-[var(--landing-btn-text)] hover:bg-[var(--landing-btn-bg)] hover:opacity-90"
         >
-          Get started
-        </Link>
+          <Link href="/listings">Get started</Link>
+        </Button>
       </div>
     </div>
   );

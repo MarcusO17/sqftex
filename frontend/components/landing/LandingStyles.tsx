@@ -60,8 +60,23 @@ export function LandingStyles() {
         --landing-btn-bg: #F5F3EF;
         --landing-btn-text: #0E0D10;
       }
+      .landing-navlink {
+        transition: color 0.2s ease;
+      }
       .landing-navlink:hover { color: var(--landing-ink); }
-      .landing-theme-toggle:hover { background: var(--landing-line); }
+      .landing-theme-toggle {
+        transition: background 0.2s ease, transform 0.2s ease;
+      }
+      .landing-theme-toggle:hover {
+        background: var(--landing-line);
+        transform: rotate(14deg);
+      }
+      .landing-category-tile {
+        transition: transform 0.25s ease;
+      }
+      .landing-category-tile:hover {
+        transform: rotate(var(--tile-rotate)) translateY(-6px) scale(1.08);
+      }
     `}</style>
   );
 }

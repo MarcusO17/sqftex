@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { landingColors as c } from "./tokens";
 
 export function HostBand() {
@@ -33,20 +34,13 @@ export function HostBand() {
           quick, and payouts are protected until move-in is confirmed.
         </p>
       </div>
-      <Link
-        href="/listings/new"
-        style={{
-          background: c.accent,
-          color: "#FFFFFF",
-          fontWeight: 700,
-          fontSize: 15,
-          padding: "16px 30px",
-          borderRadius: 12,
-          whiteSpace: "nowrap",
-        }}
+      <Button
+        asChild
+        className="h-auto whitespace-nowrap rounded-xl px-[30px] py-4 text-[15px] font-bold hover:opacity-90"
+        style={{ background: c.accent, color: "#FFFFFF" }}
       >
-        List your space
-      </Link>
+        <Link href="/listings/new">List your space</Link>
+      </Button>
     </div>
   );
 }

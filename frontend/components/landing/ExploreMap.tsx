@@ -1,25 +1,22 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { landingColors as c } from "./tokens";
 
 const locations = ["Petaling Jaya", "Subang Jaya", "Shah Alam", "Cheras"];
 
 function LocationChip({ label, active }: { label: string; active: boolean }) {
   return (
-    <Link
-      href="/listings"
+    <Button
+      asChild
+      className="h-auto rounded-lg px-4 py-3 text-xs font-bold"
       style={{
         border: `1px solid ${active ? "var(--landing-btn-bg)" : "var(--landing-line)"}`,
         color: active ? "var(--landing-btn-text)" : "var(--landing-muted)",
         background: active ? "var(--landing-btn-bg)" : "transparent",
-        fontWeight: 700,
-        fontSize: 12.5,
-        padding: "12px 16px",
-        borderRadius: 8,
-        whiteSpace: "nowrap",
       }}
     >
-      {label}
-    </Link>
+      <Link href="/listings">{label}</Link>
+    </Button>
   );
 }
 
@@ -116,29 +113,18 @@ export function ExploreMap() {
         <MapPin left={150} top={90} label="RM 150" />
         <MapPin left={660} top={110} label="RM 420" />
         <MapPin left={850} top={260} label="RM 300" />
-        <Link
-          href="/listings"
-          style={{
-            position: "absolute",
-            bottom: 20,
-            right: 24,
-            background: c.accent,
-            fontSize: 13,
-            fontWeight: 700,
-            color: "#FFFFFF",
-            padding: "12px 22px",
-            borderRadius: 12,
-            boxShadow: "0 10px 24px rgba(8,145,178,0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
+        <Button
+          asChild
+          className="absolute bottom-5 right-6 h-auto gap-1.5 rounded-xl px-[22px] py-3 text-[13px] font-bold"
+          style={{ background: c.accent, color: "#FFFFFF", boxShadow: "0 10px 24px rgba(8,145,178,0.3)" }}
         >
-          Browse full map
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round">
-            <path d="M7 17L17 7M7 7h10v10" />
-          </svg>
-        </Link>
+          <Link href="/listings">
+            Browse full map
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round">
+              <path d="M7 17L17 7M7 7h10v10" />
+            </svg>
+          </Link>
+        </Button>
       </div>
     </div>
   );
