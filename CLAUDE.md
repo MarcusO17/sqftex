@@ -70,7 +70,7 @@ Full business spec: see `docs/PRD.md`.
 
 ## Commands
 - Backend tests: `cd backend && npm test`
-- Backend dev server: `cd backend && npm run dev`
+- Backend dev server: `cd backend && npm run dev` (also always starts Prisma Studio at http://localhost:5555; `npm run dev:server` runs just the API without it)
 - Frontend dev server: `cd frontend && npm run dev`
 - Migrations: `cd backend && npx prisma migrate dev --name <description>`
 - Seed demo data: `cd backend && npm run seed` (add `-- --flush` to wipe and re-seed)

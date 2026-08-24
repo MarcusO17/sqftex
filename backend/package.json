@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "concurrently -n server,studio -c blue,magenta \"tsx watch src/server.ts\" \"prisma studio --port 5555\"",
+    "dev:server": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/src/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
@@ -28,6 +29,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.19.0",
