@@ -1583,12 +1583,13 @@ import { NavBar } from "@/components/layout/NavBar";
 import { getMe } from "@/lib/api/users";
 
 export default async function NewListingPage() {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) {
     redirect("/login");
   }
 
-  const me = await getMe();
+  const token = await getToken();
+  const me = await getMe(token);
 
   if (!me) {
     redirect("/login");
@@ -1645,7 +1646,7 @@ export default async function NewListingPage() {
 }
 ```
 
-Note: the original page called `getToken()` and passed the token into `getMe(token)`; `NewListingWizard` is a client component that fetches its own token via `useAuth()` for the draft check and the create call, so the server page no longer needs to thread a token through — it keeps calling `getMe()` (no-arg form already supported by `lib/api/users.ts`'s optional `token` param) purely for the verification gate.
+Note: `getMe(token)` still needs its token here even though `NewListingWizard` is a client component that separately fetches its own token via `useAuth()` for the draft check and the create call — the two are unrelated. `getMe()` with no token sends no `Authorization` header; the backend's `GET /users/me/` is behind `requireAuth`, so an unauthenticated call 401s, `getMe()`'s try/catch swallows that into `null`, and this page's `if (!me) redirect("/login")` fires for every visitor, verified or not, before the `is_verified` check is ever reached. Keep fetching and passing the token here exactly as the original page did.
 
 - [ ] **Step 5: Typecheck**
 
