@@ -13,7 +13,18 @@ export async function apiFetch<T>(
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`API request failed (${response.status}): ${body}`);
+    // Every backend error response in this codebase is `{ detail: "..." }` with a
+    // human-readable message — surface that verbatim so callers can render it
+    // straight to the user. Anything else (HTML error page, proxy timeout, empty
+    // body) falls back to the raw transport string for debuggability.
+    let detail: string | undefined;
+    try {
+      const parsed = JSON.parse(body);
+      if (typeof parsed?.detail === "string") detail = parsed.detail;
+    } catch {
+      // body wasn't JSON — fall through to the raw-body message below
+    }
+    throw new Error(detail ?? `API request failed (${response.status}): ${body}`);
   }
 
   if (response.status === 204) return undefined as T;

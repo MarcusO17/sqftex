@@ -34,6 +34,17 @@ export function WizardShell({
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const prevIndexRef = useRef(stepIndex);
 
+  // The swipe effect below binds its DOM listeners exactly once (its deps are
+  // mount-stable on purpose), so it would otherwise close over the very first
+  // `onIndexChange` forever. Callers pass a *stateful* guard here (it reads
+  // stepIndex/category from component state), so a frozen copy would make
+  // decisions against render-0 state and silently drop the navigation. Keep
+  // the latest one in a ref and call through that instead.
+  const onIndexChangeRef = useRef(onIndexChange);
+  useEffect(() => {
+    onIndexChangeRef.current = onIndexChange;
+  }, [onIndexChange]);
+
   // Button/programmatic navigation: animate whenever stepIndex changes from
   // the outside (not from the swipe handler below, which manages its own
   // transform/opacity directly and calls onIndexChange only once settled).
@@ -140,7 +151,7 @@ export function WizardShell({
           nb.style.zIndex = "";
         }, reduced ? 0 : 280);
         prevIndexRef.current = landed;
-        onIndexChange(landed);
+        onIndexChangeRef.current(landed);
       } else {
         cur.style.transition = "";
         cur.style.transform = "translateX(0)";
@@ -169,11 +180,10 @@ export function WizardShell({
       stage.removeEventListener("pointerup", onUp);
       stage.removeEventListener("pointercancel", onUp);
     };
-    // steps.length and onIndexChange are stable for the lifetime of a given
-    // wizard page (steps array is defined once per render tree, onIndexChange
-    // is a useState setter or equivalent) — re-binding on every stepIndex
-    // change would drop mid-drag listeners, so this intentionally only
-    // depends on the things that actually change the handler's closure.
+    // Deliberately mount-stable deps: re-binding on every stepIndex change
+    // would drop listeners mid-drag. Nothing state-dependent is read from this
+    // closure — the current panel comes from prevIndexRef and the navigation
+    // callback from onIndexChangeRef, both of which stay current.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [steps.length]);
 

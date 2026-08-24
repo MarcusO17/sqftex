@@ -85,12 +85,33 @@ export function DraftWizard({ draftId }: { draftId: number }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftId]);
 
-  function handleIndexChange(index: number) {
+  // Direct, unvalidated navigation. Used for backward moves (Back button,
+  // Review's Edit links) and by handleNext once a step's data is already
+  // PATCHed — neither case is entering new unsaved data.
+  function goToStep(index: number) {
     setStepIndex(index);
     router.replace(`/listings/new/${draftId}?step=${STEP_NAMES[index]}`);
   }
 
+  // The shell's onIndexChange. Its only forward-moving caller is the swipe
+  // gesture (Continue goes straight to onNext), and a swipe can only ever
+  // request an adjacent panel — so a forward request is always stepIndex + 1,
+  // exactly what handleNext advances to. Routing it through handleNext keeps
+  // swipes from skipping the PATCH and per-step validation that the Continue
+  // button runs. handleNext itself must call goToStep, never this function,
+  // or it would re-enter itself: `stepIndex` is a per-render const, so its
+  // internal advance calls still read the pre-advance value and would look
+  // "forward" from here.
+  function handleIndexChange(index: number) {
+    if (index > stepIndex) {
+      handleNext();
+      return;
+    }
+    goToStep(index);
+  }
+
   async function handleNext() {
+    if (submitting) return;
     setError(null);
     const token = await getToken();
     if (!token) {
@@ -106,10 +127,10 @@ export function DraftWizard({ draftId }: { draftId: number }) {
           return;
         }
         await updateListing(draftId, { latitude: lat, longitude: lng, address }, token);
-        handleIndexChange(1);
+        goToStep(1);
       } else if (stepIndex === 1) {
         await updateListing(draftId, { price_cents: Math.round(priceRM * 100), price_unit: priceUnit }, token);
-        handleIndexChange(2);
+        goToStep(2);
       } else if (stepIndex === 2) {
         if (files.length === 0 && uploadedPhotoCount === 0) {
           setError("Add at least one photo before continuing.");
@@ -129,7 +150,7 @@ export function DraftWizard({ draftId }: { draftId: number }) {
           setUploadedPhotoCount((n) => n + 1);
           setFiles(remaining);
         }
-        handleIndexChange(3);
+        goToStep(3);
       } else {
         const published = await publishListing(draftId, token);
         router.push(`/listings/${published.id}`);
@@ -203,10 +224,15 @@ export function DraftWizard({ draftId }: { draftId: number }) {
               // steps 2-5. Convert before calling handleIndexChange, which expects a
               // LOCAL index into this page's own 4-step `steps` array. Type (0) and
               // Basics (1) live on the other page entirely (/listings/new, no
-              // draftId) — editing them from here isn't supported yet, so just no-op
-              // rather than navigate to a nonexistent local step.
+              // draftId) — editing them from here isn't supported yet, so say so
+              // instead of navigating to a nonexistent local step. A silent no-op
+              // reads as a broken button.
               const local = globalIdx - 2;
-              if (local >= 0 && local <= 3) handleIndexChange(local);
+              if (local >= 0 && local <= 3) {
+                handleIndexChange(local);
+              } else {
+                setError("Type and Basics can't be edited from here yet — start a new listing to change them.");
+              }
             }}
             publishing={submitting}
             error={null}

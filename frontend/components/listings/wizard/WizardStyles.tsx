@@ -52,7 +52,7 @@ const css = `
   }
 
   .wizard-stage { grid-area: stage; position: relative; min-height: 56vh; touch-action: pan-y; overflow: hidden; }
-  .wizard-panel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 32px clamp(24px, 4vw, 56px); }
+  .wizard-panel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 32px clamp(24px, 4vw, 56px); transition: transform .46s cubic-bezier(.22,1,.36,1), opacity .32s ease; }
 
   .wizard-stepcol { width: 100%; max-width: 480px; }
   .wizard-tag { display: inline-block; background: var(--secondary); color: #fff; padding: 5px 13px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; transform: rotate(-2deg); margin-bottom: 16px; }
