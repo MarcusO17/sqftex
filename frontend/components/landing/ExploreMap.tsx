@@ -24,7 +24,7 @@ function LocationChip({ label, active }: { label: string; active: boolean }) {
 
 export function ExploreMap({ listings }: { listings: Listing[] }) {
   return (
-    <div style={{ padding: "100px 64px 80px 64px" }}>
+    <div className="mx-auto w-full max-w-[1440px] px-6 sm:px-10 lg:px-16" style={{ paddingTop: 100, paddingBottom: 80 }}>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 16 }}>
         <div>
           <h2
@@ -73,7 +73,17 @@ export function ExploreMap({ listings }: { listings: Listing[] }) {
         <Button
           asChild
           className="absolute bottom-5 right-6 h-auto gap-1.5 rounded-xl px-[22px] py-3 text-[13px] font-bold"
-          style={{ background: c.accent, color: "#FFFFFF", boxShadow: "0 10px 24px rgba(8,145,178,0.3)" }}
+          style={{
+            background: c.accent,
+            color: "#FFFFFF",
+            boxShadow: "0 10px 24px rgba(8,145,178,0.3)",
+            // Shares the wrapper's stacking context with the Leaflet map,
+            // whose panes carry explicit z-index up to 700 (popupPane).
+            // Without its own z-index this button (z-index: auto) would
+            // paint underneath those panes regardless of DOM order — an
+            // explicit z-index above Leaflet's highest pane keeps it on top.
+            zIndex: 10,
+          }}
         >
           <Link href="/listings">
             Browse full map
