@@ -13,15 +13,15 @@ export interface ListingJSON {
   description: string;
   category: string;
   size_sqft: number;
-  price_cents: number;
-  price_unit: string;
-  address: string;
+  price_cents: number | null;
+  price_unit: string | null;
+  address: string | null;
   access_rules: string;
   prohibited_items: string;
   status: string;
   photos: ListingPhotoJSON[];
-  location_lat: number;
-  location_lng: number;
+  location_lat: number | null;
+  location_lng: number | null;
   created_at: string;
   updated_at: string;
 }
