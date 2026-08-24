@@ -51,7 +51,7 @@ const css = `
     100% { transform: translate(var(--wtx), var(--wty)) rotate(var(--wrot)); opacity: 0; }
   }
 
-  .wizard-stage { grid-area: stage; position: relative; min-height: 56vh; touch-action: pan-y; }
+  .wizard-stage { grid-area: stage; position: relative; min-height: 56vh; touch-action: pan-y; overflow: hidden; }
   .wizard-panel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 32px clamp(24px, 4vw, 56px); }
 
   .wizard-stepcol { width: 100%; max-width: 480px; }
