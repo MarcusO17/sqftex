@@ -47,17 +47,21 @@ function listingsToPins(listings: Listing[]): Pin[] {
 // Reuses the same pill+tail visual the old hand-drawn MapPin component
 // used, as a raw HTML string for L.divIcon — CSS custom properties still
 // resolve normally here (the browser resolves var() regardless of whether
-// the markup came from React or Leaflet), so these pins keep responding to
-// the dark-mode toggle just like every other themed element on the page.
+// the markup came from React or Leaflet). Uses the shared app-wide tokens
+// (app/globals.css), not the landing page's --landing-* ones, since this
+// component is no longer landing-exclusive — see components/map/README
+// note in MapEmbed.tsx. Values are identical to the landing tokens in
+// light mode (same palette, promoted app-wide), so this is a no-op change
+// on the landing page itself and makes the map work on /listings too.
 function pinIcon(label: string, primary?: boolean) {
-  const bg = primary ? "var(--landing-btn-bg)" : "var(--landing-card)";
-  const fg = primary ? "var(--landing-btn-text)" : "var(--landing-ink)";
+  const bg = primary ? "var(--ink)" : "var(--paper)";
+  const fg = primary ? "#fff" : "var(--ink)";
   const pad = primary ? "8px 13px" : "7px 12px";
   const fontSize = primary ? 13 : 12;
   const dot = primary ? 9 : 8;
   return L.divIcon({
     className: "",
-    html: `<div style="display:flex;flex-direction:column;align-items:center;font-family:var(--font-landing-body),sans-serif;cursor:pointer;">
+    html: `<div style="display:flex;flex-direction:column;align-items:center;font-family:var(--font-body),sans-serif;cursor:pointer;">
       <div style="background:${bg};color:${fg};font-weight:${primary ? 800 : 700};font-size:${fontSize}px;padding:${pad};border-radius:999px;box-shadow:0 4px 12px rgba(14,13,16,${primary ? 0.3 : 0.14});white-space:nowrap;">${label}</div>
       <div style="width:${dot}px;height:${dot}px;background:${bg};transform:rotate(45deg);margin-top:-4px;"></div>
     </div>`,
@@ -66,10 +70,11 @@ function pinIcon(label: string, primary?: boolean) {
   });
 }
 
-// Real OpenStreetMap tiles plotting real listing pins (falls back to the
-// default Klang Valley view when there's nothing to plot). Pan/zoom are
-// enabled so visitors can explore in place; scroll-wheel zoom stays off so
-// scrolling the page past the map doesn't get hijacked into zooming it.
+// Real map tiles plotting real listing pins (falls back to the default
+// Klang Valley view when there's nothing to plot). Pan/zoom are enabled so
+// visitors can explore in place; scroll-wheel zoom stays off so scrolling
+// the page past the map doesn't get hijacked into zooming it. Shared by
+// the landing page's ExploreMap section and the /listings browse page.
 export function LeafletMap({ listings }: { listings: Listing[] }) {
   const router = useRouter();
   const pins = useMemo(() => listingsToPins(listings), [listings]);
@@ -96,7 +101,7 @@ export function LeafletMap({ listings }: { listings: Listing[] }) {
       attributionControl={false}
     >
       {/* Required OSM attribution, moved to bottom-left so it doesn't sit
-          under the "Browse full map" button pinned at bottom-right. */}
+          under whatever floating CTA/panel sits at bottom-right. */}
       <AttributionControl position="bottomleft" />
       <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
       {pins.map((pin) => (

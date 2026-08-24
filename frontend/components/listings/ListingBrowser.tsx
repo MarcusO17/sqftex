@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Listing } from "@/lib/api/listings";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
+import { MapEmbed } from "@/components/map/MapEmbed";
 import { ListingCard } from "./ListingCard";
 
 // Client-only: filtering runs over the listings the server already fetched,
@@ -80,19 +81,48 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
         </div>
       </div>
 
-      <div style={{ padding: "40px 64px" }}>
-        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
-          {filtered.length} {filtered.length === 1 ? "SPACE" : "SPACES"} AVAILABLE
-        </p>
-        {filtered.length === 0 ? (
-          <p style={{ fontSize: 15 }}>No listings match your filters.</p>
-        ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 24 }}>
-            {filtered.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
-        )}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 32, padding: "40px 64px" }}>
+        {/* Listings on the left, scrolling with the page. */}
+        <div style={{ flex: "1.4 1 0", minWidth: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 24 }}>
+            {filtered.length} {filtered.length === 1 ? "SPACE" : "SPACES"} AVAILABLE
+          </p>
+          {filtered.length === 0 ? (
+            <p style={{ fontSize: 15 }}>No listings match your filters.</p>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 24 }}>
+              {filtered.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Map on the right — sticky so it stays in view while the list
+            scrolls, reactive to the current category/search filters (not
+            just the full listing set) so it always matches what's on the
+            left. Hidden below lg: a half-height map fighting a narrow list
+            column for space isn't worth it on small screens. */}
+        <div
+          className="hidden lg:block"
+          style={{
+            flex: "1 1 0",
+            position: "sticky",
+            top: 24,
+            height: "calc(100vh - 64px)",
+            minHeight: 420,
+            borderRadius: 16,
+            overflow: "hidden",
+            border: "1px solid var(--line)",
+            boxShadow: "0 2px 10px rgba(14,13,16,0.06)",
+            // Leaflet's internal panes use z-index values up to 700 — an
+            // explicit stacking context here keeps them from painting over
+            // the fixed/sticky nav above (see the same note in ExploreMap.tsx).
+            zIndex: 1,
+          }}
+        >
+          <MapEmbed listings={filtered} />
+        </div>
       </div>
     </div>
   );

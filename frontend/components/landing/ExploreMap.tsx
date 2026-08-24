@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MapEmbed } from "./MapEmbed";
+import { MapEmbed } from "@/components/map/MapEmbed";
 import { landingColors as c } from "./tokens";
 import type { Listing } from "@/lib/api/listings";
 
