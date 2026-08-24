@@ -8,11 +8,16 @@ storage. Malaysia launch. Asset-light — no in-house logistics fleet.
 Full business spec: see `docs/PRD.md`.
 
 ## Stack
-- **Backend**: Django + Django REST Framework, Python
+- **Backend**: Express + TypeScript, Prisma ORM
+- **Backend auth**: Clerk (identity) + a local `User` row keyed by `clerkUserId` for domain data
+  (verification status, listing ownership)
+- **Admin panel**: AdminJS (replaces Django admin) — NRIC verification review, single
+  env-configured operator login
 - **Frontend**: Next.js (React + TypeScript), App Router
-- **Database**: PostgreSQL + PostGIS (for location/geo search)
-- **Auth**: django-allauth + custom NRIC verification step (manually reviewed
-  via Django admin for v1 — no 3rd-party KYC vendor yet)
+- **Database**: PostgreSQL (plain `lat`/`lng` floats on `Listing`, no PostGIS — Prisma has no
+  native GIS type; radius/geo search, if built later, does the math in application code)
+- **Auth**: Clerk, plus a custom NRIC verification step (manually reviewed via AdminJS for v1 —
+  no 3rd-party KYC vendor yet)
 - **Payments**: Curlec (Razorpay Malaysia) — FPX support, escrow-style hold
   until move-in confirmed
 - **File storage**: Cloudflare R2 via django-storages
@@ -22,14 +27,16 @@ Full business spec: see `docs/PRD.md`.
 
 ## Repo layout
 ```
-/backend          Django project (DRF API only, no server-rendered templates
-                   except /admin)
-  /apps
-    /users         Auth, profiles, NRIC verification
-    /listings      Space listings, categories, photos
-    /bookings      Booking lifecycle, availability
-    /payments      Curlec integration, escrow, payouts, commission
-    /reviews       Ratings/reviews post-rental
+/backend          Express + TypeScript API (Prisma ORM, AdminJS at /admin)
+  /src
+    /routes        Express routers (users, listings; bookings/payments/reviews
+                    land here when those apps are built)
+    /middleware     Clerk auth middleware
+    /serializers    Prisma row -> API JSON mappers
+    /storage        R2 (S3-compatible) upload helpers
+    /admin          AdminJS resource/config
+  /prisma           schema.prisma + migrations
+  /scripts          seed.ts (demo accounts + listings)
 /frontend          Next.js app
   /app             App Router pages
   /components
@@ -62,10 +69,11 @@ Full business spec: see `docs/PRD.md`.
   made, until the relevant party has completed ID verification.
 
 ## Commands
-- Backend tests: `cd backend && python manage.py test`
-- Backend dev server: `cd backend && python manage.py runserver`
+- Backend tests: `cd backend && npm test`
+- Backend dev server: `cd backend && npm run dev`
 - Frontend dev server: `cd frontend && npm run dev`
-- Migrations: `cd backend && python manage.py makemigrations && python manage.py migrate`
+- Migrations: `cd backend && npx prisma migrate dev --name <description>`
+- Seed demo data: `cd backend && npm run seed` (add `-- --flush` to wipe and re-seed)
 
 ## Out of scope for v1 (don't build unless asked)
 - Delivery/logistics partner integration
