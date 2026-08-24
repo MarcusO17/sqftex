@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Ruler, Tag } from "lucide-react";
 import type { Listing } from "@/lib/api/listings";
 import { categoryLabel } from "@/lib/listingCategories";
 import { formatPrice } from "@/lib/format";
-import { useTiltEffect, TiltGlare } from "@/components/ui/tilt";
 
 const MotionLink = motion(Link);
 
@@ -13,50 +14,65 @@ const MotionLink = motion(Link);
 // hairline rule) + "Loose Photo" treatment (the photo itself sits a hair
 // off-square with its own shadow, rather than flush/bordered) — picked
 // from components/listings' design exploration, minus the literal rubber-
-// stamp badge for category (turned out too gimmicky in practice) — that's
-// back to a plain eyebrow label instead. One signature "wonky" move (the
-// tilted photo) against an otherwise precise, borderless grid.
+// stamp badge for category (too gimmicky in practice — back to a plain
+// eyebrow label) and minus the mouse-tracking 3D tilt + shine (replaced by
+// a soft ambient glow on hover — calmer, and doesn't fight the photo's own
+// static rotation, which is the one "wonky" move this card keeps).
 //
 // `id` matches what the map's pin-click focus (ListingBrowser) scrolls to
 // and `focused` is the highlight that follows — see ListingBrowser.tsx.
 export function ListingCard({ listing, focused }: { listing: Listing; focused?: boolean }) {
   const coverPhoto = listing.photos[0];
-  const tilt = useTiltEffect<HTMLAnchorElement>(6);
+  const [hovered, setHovered] = useState(false);
+  const glowVisible = hovered || focused;
 
   return (
-    // Wrapper supplies `perspective` so the card's own rotateX/rotateY read
-    // as real 3D depth instead of a flat skew (perspective has to live on
-    // an ancestor, not the rotated element itself).
-    <div id={`listing-card-${listing.id}`} style={{ perspective: 1000, scrollMarginTop: 24 }}>
+    <div id={`listing-card-${listing.id}`} style={{ position: "relative", scrollMarginTop: 24 }}>
+      {/* Ambient glow behind the card, replaces the old tilt+shine — a
+          plain opacity fade is enough since it sits behind everything and
+          just needs to read as "this card is active", not draw the eye. */}
+      <motion.div
+        aria-hidden
+        initial={false}
+        animate={{ opacity: glowVisible ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          position: "absolute",
+          inset: -20,
+          borderRadius: 28,
+          background: "radial-gradient(60% 60% at 50% 45%, rgba(8,145,178,0.22), transparent 72%)",
+          filter: "blur(18px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       <MotionLink
-        ref={tilt.ref}
         href={`/listings/${listing.id}`}
-        onMouseMove={tilt.onMouseMove}
-        onMouseEnter={tilt.onMouseEnter}
-        onMouseLeave={tilt.onMouseLeave}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         initial={false}
         animate={{
           boxShadow: focused
             ? "0 0 0 2px var(--primary), 0 18px 34px rgba(14,13,16,0.14)"
-            : "0 0 0 0 transparent, 0 0 0 0 transparent",
+            : hovered
+              ? "0 0 0 0 transparent, 0 14px 30px rgba(14,13,16,0.10)"
+              : "0 0 0 0 transparent, 0 0 0 0 transparent",
         }}
-        whileHover={{ boxShadow: "0 0 0 0 transparent, 0 14px 30px rgba(14,13,16,0.10)" }}
+        transition={{ duration: 0.25 }}
         style={{
           display: "flex",
           alignItems: "flex-start",
           gap: 24,
           position: "relative",
+          zIndex: 1,
           background: "var(--paper)",
           borderRadius: 16,
           padding: 12,
-          transformStyle: "preserve-3d",
-          rotateX: tilt.rotateX,
-          rotateY: tilt.rotateY,
         }}
       >
-        {/* The one wonky move: a hair off-square, floating on its own
-            shadow — rotation lives here, scoped to the photo, so it doesn't
-            fight the whole row's mouse-tracking 3D tilt above. */}
+        {/* The one wonky move: the photo sits a hair off-square, floating
+            on its own shadow, while the rest of the card stays precise. */}
         <div
           style={{
             width: 232,
@@ -119,24 +135,29 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
             </p>
           )}
 
-          {/* Manifest-style spec row: label-value pairs under a hairline
-              rule, instead of a plain "size · price" line. */}
+          {/* Manifest-style spec row: an icon + label-value pair per stat,
+              under a hairline rule, instead of a plain "size · price" line. */}
           <div style={{ display: "flex", gap: 28, marginTop: 4, paddingTop: 12, borderTop: "1px solid var(--line)" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))" }}>
-                Size
-              </span>
-              <strong style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: 15 }}>{listing.size_sqft} sqft</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Ruler size={15} strokeWidth={2} color="var(--primary)" style={{ flexShrink: 0 }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))" }}>
+                  Size
+                </span>
+                <strong style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: 15 }}>{listing.size_sqft} sqft</strong>
+              </div>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))" }}>
-                Price
-              </span>
-              <strong style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: 15 }}>{formatPrice(listing)}</strong>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Tag size={15} strokeWidth={2} color="var(--primary)" style={{ flexShrink: 0 }} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))" }}>
+                  Price
+                </span>
+                <strong style={{ fontFamily: "var(--font-heading)", fontWeight: 700, fontSize: 15 }}>{formatPrice(listing)}</strong>
+              </div>
             </div>
           </div>
         </div>
-        <TiltGlare handle={tilt} />
       </MotionLink>
     </div>
   );
