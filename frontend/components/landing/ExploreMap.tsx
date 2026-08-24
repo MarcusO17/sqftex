@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { MapEmbed } from "./MapEmbed";
 import { landingColors as c } from "./tokens";
 
 const locations = ["Petaling Jaya", "Subang Jaya", "Shah Alam", "Cheras"];
@@ -17,46 +18,6 @@ function LocationChip({ label, active }: { label: string; active: boolean }) {
     >
       <Link href="/listings">{label}</Link>
     </Button>
-  );
-}
-
-function MapPin({ left, top, label, primary }: { left: number; top: number; label: string; primary?: boolean }) {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left,
-        top,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        zIndex: primary ? 2 : 1,
-      }}
-    >
-      <div
-        style={{
-          background: primary ? "var(--landing-btn-bg)" : "var(--landing-card)",
-          color: primary ? "var(--landing-btn-text)" : "var(--landing-ink)",
-          fontWeight: primary ? 800 : 700,
-          fontSize: primary ? 13 : 12,
-          padding: primary ? "8px 13px" : "7px 12px",
-          borderRadius: 999,
-          boxShadow: primary ? "0 4px 12px rgba(14,13,16,0.3)" : "0 3px 10px rgba(14,13,16,0.14)",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {label}
-      </div>
-      <div
-        style={{
-          width: primary ? 9 : 8,
-          height: primary ? 9 : 8,
-          background: primary ? "var(--landing-btn-bg)" : "var(--landing-card)",
-          transform: "rotate(45deg)",
-          marginTop: -4,
-        }}
-      />
-    </div>
   );
 }
 
@@ -97,22 +58,7 @@ export function ExploreMap() {
           boxShadow: "0 20px 46px rgba(14,13,16,0.1)",
         }}
       >
-        <svg width="100%" height="100%" viewBox="0 0 1312 360" preserveAspectRatio="none" style={{ display: "block" }}>
-          <rect width="1312" height="360" fill="#EEEEF1" />
-          <path d="M-40 250 C 220 190, 420 290, 640 230 S 1100 170, 1360 210" stroke="#E1E6EF" strokeWidth="70" fill="none" />
-          <rect x="920" y="-30" width="260" height="220" fill="#E4EEF6" />
-          <path d="M0 70 H1312" stroke="#FFFFFF" strokeWidth="10" />
-          <path d="M0 290 H1312" stroke="#FFFFFF" strokeWidth="9" />
-          <path d="M260 0 V360" stroke="#FFFFFF" strokeWidth="9" />
-          <path d="M760 0 V360" stroke="#FFFFFF" strokeWidth="12" />
-          <path d="M-40 340 L 1360 30" stroke="#FFFFFF" strokeWidth="16" />
-          <path d="M0 170 H1312" stroke="#FFFFFF" strokeWidth="5" />
-        </svg>
-        <MapPin left={300} top={150} label="RM 180" primary />
-        <MapPin left={480} top={230} label="RM 250" />
-        <MapPin left={150} top={90} label="RM 150" />
-        <MapPin left={660} top={110} label="RM 420" />
-        <MapPin left={850} top={260} label="RM 300" />
+        <MapEmbed />
         <Button
           asChild
           className="absolute bottom-5 right-6 h-auto gap-1.5 rounded-xl px-[22px] py-3 text-[13px] font-bold"

@@ -41,8 +41,19 @@ const FEATURE_CARDS: FeatureCard[] = [
   },
 ];
 
-const CARD_OFFSET = 14;
+const CARD_OFFSET = 8;
 const SCALE_FACTOR = 0.05;
+
+// Cards behind the front one fan out to alternating sides (like a hand of
+// playing cards) instead of stacking dead-center — the front card (index 0)
+// stays flat and centered since it's the one being read/clicked; only the
+// peeking cards behind it fan.
+function fanTransform(index: number) {
+  if (index === 0) return { rotate: 0, x: 0 };
+  const side = index % 2 === 1 ? 1 : -1;
+  const magnitude = Math.ceil(index / 2);
+  return { rotate: side * magnitude * 7, x: side * magnitude * 18 };
+}
 
 // Aceternity-style "Card Stack" (https://ui.aceternity.com/components/card-stack):
 // a deck of cards peeking out behind one another. Aceternity's own version
@@ -67,12 +78,15 @@ export function HeroFeatureCard() {
     <div style={{ position: "relative", zIndex: 1, width: 480, height: 520 }}>
       {cards.map((card, index) => {
         const isFront = index === 0;
+        const fan = fanTransform(index);
         return (
           <motion.div
             key={card.id}
             onClick={isFront ? advance : undefined}
             animate={{
               top: index * -CARD_OFFSET,
+              x: fan.x,
+              rotate: fan.rotate,
               scale: 1 - index * SCALE_FACTOR,
               zIndex: cards.length - index,
             }}
@@ -83,7 +97,7 @@ export function HeroFeatureCard() {
               position: "absolute",
               left: 0,
               right: 0,
-              transformOrigin: "top center",
+              transformOrigin: "bottom center",
               width: 480,
               height: 480,
               borderRadius: 28,
