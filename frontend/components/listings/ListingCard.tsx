@@ -4,17 +4,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Listing } from "@/lib/api/listings";
 import { categoryLabel } from "@/lib/listingCategories";
+import { formatPrice } from "@/lib/format";
 import { useTiltEffect, TiltGlare } from "@/components/ui/tilt";
 
 const MotionLink = motion(Link);
 
-function formatPrice(listing: Listing): string {
-  const ringgit = (listing.price_cents / 100).toFixed(2);
-  const unit = listing.price_unit === "daily" ? "/day" : "/month";
-  return `RM ${ringgit}${unit}`;
-}
-
-export function ListingCard({ listing }: { listing: Listing }) {
+// `id` matches what the map's pin-click focus (ListingBrowser) scrolls to
+// and `focused` is the highlight that follows — see ListingBrowser.tsx.
+export function ListingCard({ listing, focused }: { listing: Listing; focused?: boolean }) {
   const coverPhoto = listing.photos[0];
   const tilt = useTiltEffect<HTMLAnchorElement>(6);
 
@@ -22,20 +19,23 @@ export function ListingCard({ listing }: { listing: Listing }) {
     // Wrapper supplies `perspective` so the card's own rotateX/rotateY read
     // as real 3D depth instead of a flat skew (perspective has to live on
     // an ancestor, not the rotated element itself).
-    <div style={{ perspective: 1000 }}>
+    <div id={`listing-card-${listing.id}`} style={{ perspective: 1000, scrollMarginTop: 24 }}>
       <MotionLink
         ref={tilt.ref}
         href={`/listings/${listing.id}`}
         onMouseMove={tilt.onMouseMove}
         onMouseEnter={tilt.onMouseEnter}
         onMouseLeave={tilt.onMouseLeave}
-        initial={{ boxShadow: "0 2px 10px rgba(14,13,16,0.06)" }}
+        initial={false}
+        animate={{
+          boxShadow: focused ? "0 18px 34px rgba(14,13,16,0.16)" : "0 2px 10px rgba(14,13,16,0.06)",
+        }}
         whileHover={{ boxShadow: "0 18px 34px rgba(14,13,16,0.16)" }}
         style={{
           display: "block",
           position: "relative",
           background: "var(--paper)",
-          border: "1px solid var(--line)",
+          border: focused ? "1px solid var(--primary)" : "1px solid var(--line)",
           borderRadius: 14,
           overflow: "hidden",
           transformStyle: "preserve-3d",

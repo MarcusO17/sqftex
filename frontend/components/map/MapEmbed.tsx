@@ -14,6 +14,14 @@ const LeafletMap = dynamic(() => import("./LeafletMap").then((m) => m.LeafletMap
   loading: () => <div style={{ width: "100%", height: "100%", background: "var(--card)" }} />,
 });
 
-export function MapEmbed({ listings }: { listings: Listing[] }) {
-  return <LeafletMap listings={listings} />;
+export function MapEmbed({
+  listings,
+  onPinFocus,
+  onPinBlur,
+}: {
+  listings: Listing[];
+  onPinFocus?: (id: number) => void;
+  onPinBlur?: () => void;
+}) {
+  return <LeafletMap listings={listings} onPinFocus={onPinFocus} onPinBlur={onPinBlur} />;
 }

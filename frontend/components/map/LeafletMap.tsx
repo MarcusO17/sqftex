@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { MapContainer, TileLayer, Marker, AttributionControl } from "react-leaflet";
+import Link from "next/link";
+import { MapContainer, TileLayer, Marker, Popup, AttributionControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Listing } from "@/lib/api/listings";
+import { categoryLabel } from "@/lib/listingCategories";
+import { formatPrice } from "@/lib/format";
 
 // Default view when there are no listings to plot yet (or the API call
 // failed) — same Klang Valley framing the map has always opened on.
@@ -26,7 +28,7 @@ const TILE_ATTRIBUTION = MAPTILER_KEY
   ? '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   : '&copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
 
-type Pin = { id: number; lat: number; lng: number; label: string; primary?: boolean };
+type Pin = { id: number; lat: number; lng: number; label: string; primary?: boolean; listing: Listing };
 
 function listingsToPins(listings: Listing[]): Pin[] {
   const cheapestId = listings.reduce<number | null>((min, l) => {
@@ -41,6 +43,7 @@ function listingsToPins(listings: Listing[]): Pin[] {
     lng: l.location_lng,
     label: `RM ${Math.round(l.price_cents / 100)}`,
     primary: l.id === cheapestId,
+    listing: l,
   }));
 }
 
@@ -75,8 +78,22 @@ function pinIcon(label: string, primary?: boolean) {
 // visitors can explore in place; scroll-wheel zoom stays off so scrolling
 // the page past the map doesn't get hijacked into zooming it. Shared by
 // the landing page's ExploreMap section and the /listings browse page.
-export function LeafletMap({ listings }: { listings: Listing[] }) {
-  const router = useRouter();
+//
+// Clicking a pin doesn't navigate straight to the listing — it opens a
+// lightweight preview popup first (title/price/photo + a "View more
+// details" link), and optionally reports focus back to the caller (used on
+// /listings to highlight + scroll to the matching card in the list on the
+// left) so a click is cheap to back out of instead of committing to a full
+// navigation immediately.
+export function LeafletMap({
+  listings,
+  onPinFocus,
+  onPinBlur,
+}: {
+  listings: Listing[];
+  onPinFocus?: (id: number) => void;
+  onPinBlur?: () => void;
+}) {
   const pins = useMemo(() => listingsToPins(listings), [listings]);
 
   const center = useMemo<[number, number]>(() => {
@@ -104,14 +121,54 @@ export function LeafletMap({ listings }: { listings: Listing[] }) {
           under whatever floating CTA/panel sits at bottom-right. */}
       <AttributionControl position="bottomleft" />
       <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
-      {pins.map((pin) => (
-        <Marker
-          key={pin.id}
-          position={[pin.lat, pin.lng]}
-          icon={pinIcon(pin.label, pin.primary)}
-          eventHandlers={{ click: () => router.push(`/listings/${pin.id}`) }}
-        />
-      ))}
+      {pins.map((pin) => {
+        const { listing } = pin;
+        const coverPhoto = listing.photos[0];
+        return (
+          <Marker
+            key={pin.id}
+            position={[pin.lat, pin.lng]}
+            icon={pinIcon(pin.label, pin.primary)}
+            eventHandlers={{
+              popupopen: () => onPinFocus?.(pin.id),
+              popupclose: () => onPinBlur?.(),
+            }}
+          >
+            <Popup minWidth={220} maxWidth={240} closeButton={true}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, fontFamily: "var(--font-body), sans-serif" }}>
+                {coverPhoto && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={coverPhoto.image}
+                    alt={listing.title}
+                    style={{ width: "100%", height: 110, objectFit: "cover", borderRadius: 8, marginBottom: 2 }}
+                  />
+                )}
+                <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--primary)" }}>
+                  {categoryLabel(listing.category)}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--ink)", lineHeight: 1.3 }}>{listing.title}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink)" }}>
+                  {listing.size_sqft} sqft &middot; {formatPrice(listing)}
+                </span>
+                <Link
+                  href={`/listings/${listing.id}`}
+                  style={{
+                    marginTop: 4,
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    color: "var(--primary)",
+                    textDecoration: "underline",
+                    textUnderlineOffset: "2px",
+                  }}
+                >
+                  View more details &rarr;
+                </Link>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 }

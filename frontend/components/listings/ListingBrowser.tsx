@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { Listing } from "@/lib/api/listings";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 import { MapEmbed } from "@/components/map/MapEmbed";
@@ -12,6 +12,18 @@ import { ListingCard } from "./ListingCard";
 export function ListingBrowser({ listings }: { listings: Listing[] }) {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [focusedId, setFocusedId] = useState<number | null>(null);
+
+  // Clicking a map pin opens its preview popup (see LeafletMap) rather than
+  // navigating straight away — this is what that popup reports back:
+  // highlight + scroll to the matching card in the list on the left, so the
+  // pin click stays cheap to back out of instead of committing to a full
+  // page navigation immediately.
+  const handlePinFocus = useCallback((id: number) => {
+    setFocusedId(id);
+    document.getElementById(`listing-card-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
+  const handlePinBlur = useCallback(() => setFocusedId(null), []);
 
   const filtered = useMemo(() => {
     return listings.filter((listing) => {
@@ -92,7 +104,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 24 }}>
               {filtered.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
+                <ListingCard key={listing.id} listing={listing} focused={listing.id === focusedId} />
               ))}
             </div>
           )}
@@ -121,7 +133,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             zIndex: 1,
           }}
         >
-          <MapEmbed listings={filtered} />
+          <MapEmbed listings={filtered} onPinFocus={handlePinFocus} onPinBlur={handlePinBlur} />
         </div>
       </div>
     </div>
