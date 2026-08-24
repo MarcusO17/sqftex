@@ -2260,25 +2260,37 @@ export function DraftWizard({ draftId }: { draftId: number }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [loadError, setLoadError] = useState<string | null>(null);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const token = await getToken();
-      const loaded = await getListing(draftId, token);
-      if (cancelled) return;
-      setDraft(loaded);
-      if (loaded.location_lat !== null) setLat(loaded.location_lat);
-      if (loaded.location_lng !== null) setLng(loaded.location_lng);
-      if (loaded.address) setAddress(loaded.address);
-      if (loaded.price_cents !== null) setPriceRM(loaded.price_cents / 100);
-      if (loaded.price_unit) setPriceUnit(loaded.price_unit);
-      setAccessRules(loaded.access_rules);
-      setProhibitedItems(loaded.prohibited_items);
-      setUploadedPhotoCount(loaded.photos.length);
+      try {
+        const token = await getToken();
+        const loaded = await getListing(draftId, token);
+        if (cancelled) return;
+        setDraft(loaded);
+        if (loaded.location_lat !== null) setLat(loaded.location_lat);
+        if (loaded.location_lng !== null) setLng(loaded.location_lng);
+        if (loaded.address) setAddress(loaded.address);
+        if (loaded.price_cents !== null) setPriceRM(loaded.price_cents / 100);
+        if (loaded.price_unit) setPriceUnit(loaded.price_unit);
+        setAccessRules(loaded.access_rules);
+        setProhibitedItems(loaded.prohibited_items);
+        setUploadedPhotoCount(loaded.photos.length);
 
-      const stepParam = searchParams.get("step") as StepName | null;
-      const paramIndex = stepParam ? STEP_NAMES.indexOf(stepParam) : -1;
-      setStepIndex(paramIndex !== -1 ? paramIndex : firstIncompleteStep(loaded));
+        const stepParam = searchParams.get("step") as StepName | null;
+        const paramIndex = stepParam ? STEP_NAMES.indexOf(stepParam) : -1;
+        setStepIndex(paramIndex !== -1 ? paramIndex : firstIncompleteStep(loaded));
+      } catch (err) {
+        // Same fallback pattern as NewListingWizard's draft-check effect —
+        // an unhandled rejection here would otherwise leave `draft` at
+        // `null` forever, permanently rendering the `if (!draft) return
+        // null;` branch below with no error and no way out.
+        if (!cancelled) {
+          setLoadError(err instanceof Error ? err.message : "Couldn't load this draft. Try again.");
+        }
+      }
     })();
     return () => {
       cancelled = true;
@@ -2318,11 +2330,18 @@ export function DraftWizard({ draftId }: { draftId: number }) {
           return;
         }
         await updateListing(draftId, { access_rules: accessRules, prohibited_items: prohibitedItems }, token);
-        for (const file of files) {
-          await addListingPhoto(draftId, file, token);
+        // Upload one at a time, trimming `files`/bumping the count after
+        // each success — if upload N of M fails partway, the M-N already
+        // committed to the server are removed from `files` immediately, so
+        // clicking Continue again only retries what's actually left instead
+        // of re-uploading (and duplicating) photos that already landed.
+        let remaining = files;
+        while (remaining.length > 0) {
+          await addListingPhoto(draftId, remaining[0], token);
+          remaining = remaining.slice(1);
+          setUploadedPhotoCount((n) => n + 1);
+          setFiles(remaining);
         }
-        setUploadedPhotoCount((n) => n + files.length);
-        setFiles([]);
         handleIndexChange(3);
       } else {
         const published = await publishListing(draftId, token);
@@ -2336,6 +2355,13 @@ export function DraftWizard({ draftId }: { draftId: number }) {
     }
   }
 
+  if (loadError) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", padding: "96px 32px" }}>
+        <p role="alert">{loadError}</p>
+      </div>
+    );
+  }
   if (!draft) return null;
 
   return (
@@ -2383,7 +2409,18 @@ export function DraftWizard({ draftId }: { draftId: number }) {
             priceRM={priceRM}
             priceUnit={priceUnit}
             photoCount={uploadedPhotoCount + files.length}
-            onEditStep={handleIndexChange}
+            onEditStep={(globalIdx) => {
+              // ReviewStep hands back a GLOBAL step index (0=Type..5=Review
+              // — it has no idea this page only owns the local slice
+              // corresponding to global steps 2-5). Convert before handing
+              // it to handleIndexChange, which expects a LOCAL index into
+              // this page's own 4-step `steps` array. Type (0) and Basics
+              // (1) live on the other page entirely (/listings/new, no
+              // draftId) — editing them from here isn't supported yet, so
+              // just no-op rather than navigate to a nonexistent local step.
+              const local = globalIdx - 2;
+              if (local >= 0 && local <= 3) handleIndexChange(local);
+            }}
             publishing={submitting}
             error={null}
           />,
@@ -2395,6 +2432,7 @@ export function DraftWizard({ draftId }: { draftId: number }) {
         onIndexChange={handleIndexChange}
         onNext={handleNext}
         nextLabel={submitting ? "Saving…" : stepIndex === 3 ? "Publish" : "Continue →"}
+        backDisabled={stepIndex === 0}
       />
     </div>
   );
