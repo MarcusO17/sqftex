@@ -7,11 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  renter
+  host
+}
+
 model User {
   id            Int      @id @default(autoincrement())
   clerkUserId   String   @unique
   email         String   @unique
   username      String?
+  phone         String   @default("")
+  address       String   @default("")
+  // Nullable — onboarding role selection isn't built yet, so this stays
+  // unset until that flow exists. Nothing reads it yet.
+  role          UserRole?
   isVerified    Boolean  @default(false)
   createdAt     DateTime @default(now())
 

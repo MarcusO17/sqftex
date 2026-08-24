@@ -41,6 +41,11 @@ export function NavBar({ variant }: NavBarProps) {
             <Link href="/listings/new" className="nav-link">
               List a space
             </Link>
+            <SignedIn>
+              <Link href="/profile" className="nav-link">
+                Profile
+              </Link>
+            </SignedIn>
           </div>
         )}
       </div>
