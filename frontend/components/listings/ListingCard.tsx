@@ -21,7 +21,17 @@ const MotionLink = motion(Link);
 //
 // `id` matches what the map's pin-click focus (ListingBrowser) scrolls to
 // and `focused` is the highlight that follows — see ListingBrowser.tsx.
-export function ListingCard({ listing, focused }: { listing: Listing; focused?: boolean }) {
+// `onHoverChange` is the reverse direction: hovering a card reports back up
+// so the map can pan to follow it.
+export function ListingCard({
+  listing,
+  focused,
+  onHoverChange,
+}: {
+  listing: Listing;
+  focused?: boolean;
+  onHoverChange?: (hovering: boolean) => void;
+}) {
   const coverPhoto = listing.photos[0];
   const [hovered, setHovered] = useState(false);
   const glowVisible = hovered || focused;
@@ -49,8 +59,14 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
 
       <MotionLink
         href={`/listings/${listing.id}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        onMouseEnter={() => {
+          setHovered(true);
+          onHoverChange?.(true);
+        }}
+        onMouseLeave={() => {
+          setHovered(false);
+          onHoverChange?.(false);
+        }}
         initial={false}
         animate={{
           boxShadow: focused

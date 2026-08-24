@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { MapContainer, TileLayer, Marker, Popup, AttributionControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, AttributionControl, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Listing } from "@/lib/api/listings";
@@ -73,6 +73,25 @@ function pinIcon(label: string, primary?: boolean) {
   });
 }
 
+// Imperatively pans the map when `panToId` changes — `<MapContainer>`'s
+// center/zoom props only apply on mount, so following a hovered listing
+// needs the actual Leaflet map instance (useMap(), only available from a
+// descendant of MapContainer, which is why this is a separate component
+// rather than inline logic in LeafletMap itself). Only pans forward: an id
+// going back to null (hover ending) doesn't snap the map back — it just
+// stays wherever it last followed to, so scanning down a list doesn't
+// fight itself with a pan-away on every mouse-leave.
+function PanToListing({ pins, panToId }: { pins: Pin[]; panToId: number | null | undefined }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!panToId) return;
+    const pin = pins.find((p) => p.id === panToId);
+    if (!pin) return;
+    map.panTo([pin.lat, pin.lng], { animate: true, duration: 0.5 });
+  }, [panToId, pins, map]);
+  return null;
+}
+
 // Real map tiles plotting real listing pins (falls back to the default
 // Klang Valley view when there's nothing to plot). Pan/zoom are enabled so
 // visitors can explore in place; scroll-wheel zoom stays off so scrolling
@@ -84,15 +103,18 @@ function pinIcon(label: string, primary?: boolean) {
 // details" link), and optionally reports focus back to the caller (used on
 // /listings to highlight + scroll to the matching card in the list on the
 // left) so a click is cheap to back out of instead of committing to a full
-// navigation immediately.
+// navigation immediately. `panToId` is the reverse direction: hovering a
+// card in that list pans the map to follow it.
 export function LeafletMap({
   listings,
   onPinFocus,
   onPinBlur,
+  panToId,
 }: {
   listings: Listing[];
   onPinFocus?: (id: number) => void;
   onPinBlur?: () => void;
+  panToId?: number | null;
 }) {
   const pins = useMemo(() => listingsToPins(listings), [listings]);
 
@@ -121,6 +143,7 @@ export function LeafletMap({
           under whatever floating CTA/panel sits at bottom-right. */}
       <AttributionControl position="bottomleft" />
       <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
+      <PanToListing pins={pins} panToId={panToId} />
       {pins.map((pin) => {
         const { listing } = pin;
         const coverPhoto = listing.photos[0];

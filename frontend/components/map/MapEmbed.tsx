@@ -18,10 +18,12 @@ export function MapEmbed({
   listings,
   onPinFocus,
   onPinBlur,
+  panToId,
 }: {
   listings: Listing[];
   onPinFocus?: (id: number) => void;
   onPinBlur?: () => void;
+  panToId?: number | null;
 }) {
-  return <LeafletMap listings={listings} onPinFocus={onPinFocus} onPinBlur={onPinBlur} />;
+  return <LeafletMap listings={listings} onPinFocus={onPinFocus} onPinBlur={onPinBlur} panToId={panToId} />;
 }

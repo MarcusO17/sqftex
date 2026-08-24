@@ -41,6 +41,11 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [focusedId, setFocusedId] = useState<number | null>(null);
+  // Separate from focusedId: panToId only ever moves forward (see
+  // PanToListing in LeafletMap.tsx) — hovering off a card shouldn't yank
+  // the map back to wherever it was before, so it's not just "clear on
+  // blur" the way focusedId's highlight is.
+  const [panToId, setPanToId] = useState<number | null>(null);
 
   function changeCategory(next: string) {
     setCategory(next);
@@ -61,6 +66,17 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
     document.getElementById(`listing-card-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, []);
   const handlePinBlur = useCallback(() => setFocusedId(null), []);
+
+  // Reverse direction: hovering a card in the list highlights it (same
+  // pop+ring as a map-pin focus) and pans the map to follow it.
+  const handleCardHoverChange = useCallback((id: number, hovering: boolean) => {
+    if (hovering) {
+      setFocusedId(id);
+      setPanToId(id);
+    } else {
+      setFocusedId((prev) => (prev === id ? null : prev));
+    }
+  }, []);
 
   const filtered = useMemo(() => {
     return listings.filter((listing) => {
@@ -148,7 +164,12 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             <>
               <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                 {pageItems.map((listing) => (
-                  <ListingCard key={listing.id} listing={listing} focused={listing.id === focusedId} />
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    focused={listing.id === focusedId}
+                    onHoverChange={(hovering) => handleCardHoverChange(listing.id, hovering)}
+                  />
                 ))}
               </div>
 
@@ -227,7 +248,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
             zIndex: 1,
           }}
         >
-          <MapEmbed listings={pageItems} onPinFocus={handlePinFocus} onPinBlur={handlePinBlur} />
+          <MapEmbed listings={pageItems} onPinFocus={handlePinFocus} onPinBlur={handlePinBlur} panToId={panToId} />
         </div>
       </div>
     </div>
