@@ -12,18 +12,19 @@ import type { Listing } from "@/lib/api/listings";
 const DEFAULT_CENTER: [number, number] = [3.1, 101.62];
 const DEFAULT_ZOOM = 11;
 
-// MapTiler's "Streets" raster tiles when a key is configured (OSM's own
-// tile servers explicitly disallow this kind of production/bulk use —
-// https://operations.osmfoundation.org/policies/tiles/ — MapTiler is the
-// proper provider for that). Falls back to plain OSM tiles so local dev
-// without a key still renders a map.
+// Tile provider: MapTiler's "Streets" tiles when a key is configured,
+// otherwise CARTO's "Positron" basemap — a free, no-signup, minimal light
+// style (muted greys, subtle labels) that's a big step up from plain OSM
+// raster tiles (which are also not meant for production traffic —
+// https://operations.osmfoundation.org/policies/tiles/) and lets the
+// colored price-pill markers stand out cleanly on top of it.
 const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY;
 const TILE_URL = MAPTILER_KEY
   ? `https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`
-  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 const TILE_ATTRIBUTION = MAPTILER_KEY
   ? '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
-  : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  : '&copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
 
 type Pin = { id: number; lat: number; lng: number; label: string; primary?: boolean };
 

@@ -90,7 +90,10 @@ const config: Config = {
         220: "220ms",
       },
       transitionTimingFunction: {
-        "bounce-smooth": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        // A restrained back-out — the 1.56 overshoot factor from a typical
+        // "easeOutBack" curve read as too bouncy; 1.15 keeps just a hint of
+        // give without visibly overshooting past the target scale.
+        "bounce-smooth": "cubic-bezier(0.34, 1.15, 0.64, 1)",
       },
     },
   },
