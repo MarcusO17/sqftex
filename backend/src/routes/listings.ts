@@ -74,6 +74,11 @@ listingsRouter.get("/", attachDbUserIfPresent, async (req, res) => {
   }
 
   const statusParam = typeof req.query.status === "string" ? req.query.status : undefined;
+  if (statusParam && !Object.values(ListingStatus).includes(statusParam as ListingStatus)) {
+    res.status(400).json({ detail: "Invalid status filter." });
+    return;
+  }
+
   const where = mine
     ? { ownerId: req.dbUser!.id, ...(statusParam ? { status: statusParam as ListingStatus } : {}) }
     : req.dbUser

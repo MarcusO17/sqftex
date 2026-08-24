@@ -183,4 +183,13 @@ describe("listings routes", () => {
     const res = await request(await createApp()).get("/api/v1/listings/?mine=1");
     expect(res.status).toBe(401);
   });
+
+  it("GET /?mine=1&status=invalid rejects invalid status with 400", async () => {
+    await makeUser("test_listings_invalid_status", "invalid_status@example.com", true);
+    authAs("test_listings_invalid_status", "invalid_status@example.com");
+
+    const res = await request(await createApp()).get("/api/v1/listings/?mine=1&status=not_a_real_status");
+    expect(res.status).toBe(400);
+    expect(res.body.detail).toBeTruthy();
+  });
 });
