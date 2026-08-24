@@ -31,17 +31,22 @@ const TILE_ATTRIBUTION = MAPTILER_KEY
 type Pin = { id: number; lat: number; lng: number; label: string; primary?: boolean; listing: Listing };
 
 function listingsToPins(listings: Listing[]): Pin[] {
-  const cheapestId = listings.reduce<number | null>((min, l) => {
+  // Filter to only include listings with required fields for mapping
+  const complete = listings.filter(
+    (l) => l.location_lat !== null && l.location_lng !== null && l.price_cents !== null
+  );
+
+  const cheapestId = complete.reduce<number | null>((min, l) => {
     if (min === null) return l.id;
-    const minListing = listings.find((x) => x.id === min)!;
-    return l.price_cents < minListing.price_cents ? l.id : min;
+    const minListing = complete.find((x) => x.id === min)!;
+    return l.price_cents! < minListing.price_cents! ? l.id : min;
   }, null);
 
-  return listings.map((l) => ({
+  return complete.map((l) => ({
     id: l.id,
-    lat: l.location_lat,
-    lng: l.location_lng,
-    label: `RM ${Math.round(l.price_cents / 100)}`,
+    lat: l.location_lat!,
+    lng: l.location_lng!,
+    label: `RM ${Math.round(l.price_cents! / 100)}`,
     primary: l.id === cheapestId,
     listing: l,
   }));

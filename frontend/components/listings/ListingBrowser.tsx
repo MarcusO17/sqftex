@@ -84,7 +84,7 @@ export function ListingBrowser({ listings }: { listings: Listing[] }) {
       const matchesQuery =
         query.trim() === "" ||
         listing.title.toLowerCase().includes(query.toLowerCase()) ||
-        listing.address.toLowerCase().includes(query.toLowerCase());
+        (listing.address?.toLowerCase().includes(query.toLowerCase()) ?? false);
       return matchesCategory && matchesQuery;
     });
   }, [listings, category, query]);

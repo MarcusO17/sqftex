@@ -8,7 +8,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
   const { getToken } = await auth();
   const token = await getToken();
   const listing = await getListing(Number(params.id), token);
-  const ringgit = (listing.price_cents / 100).toFixed(2);
+  const ringgit = (listing.price_cents! / 100).toFixed(2);
   const unitLabel = listing.price_unit === "daily" ? "day" : "month";
 
   return (
@@ -98,7 +98,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
                   <path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" />
                   <circle cx="12" cy="9" r="2.3" />
                 </svg>
-                {listing.address} &middot; {listing.size_sqft} sqft
+                {listing.address!} &middot; {listing.size_sqft} sqft
               </div>
             </div>
 
