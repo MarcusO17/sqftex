@@ -1,3 +1,14 @@
+// src/env.ts does `import "dotenv/config"`, which re-reads the real
+// backend/.env file every time the module is freshly required. Since Task 2
+// deliberately puts non-empty placeholder values in .env (real Clerk keys
+// are a prerequisite noted in the plan, but tests need something present),
+// leaving this unmocked would let a `delete process.env.X` below get
+// silently undone by dotenv reloading X from disk — making the "missing
+// var" test depend on the developer's local .env staying incomplete rather
+// than on the code under test. Mock it to a no-op so these tests only see
+// the process.env values set explicitly in each test.
+jest.mock("dotenv/config", () => ({}));
+
 describe("env", () => {
   const ORIGINAL_ENV = process.env;
 

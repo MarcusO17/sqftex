@@ -1,3 +1,9 @@
+jest.mock("@clerk/express", () => ({
+  clerkMiddleware: () => (_req: any, _res: any, next: any) => next(),
+  getAuth: jest.fn(),
+  clerkClient: { users: { getUser: jest.fn() } },
+}));
+
 import request from "supertest";
 import { createApp } from "../src/app";
 

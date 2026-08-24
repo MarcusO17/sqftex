@@ -538,6 +538,13 @@ jest.mock("@aws-sdk/s3-request-presigner", () => ({
   getSignedUrl: jest.fn().mockResolvedValue("https://signed.example/private/verification/abc.jpg"),
 }));
 
+// Fixed, known value — do not read process.env.R2_PUBLIC_BASE_URL here. If the real .env has it
+// blank, an assertion against process.env would pass vacuously (url.startsWith("") is always
+// true) and prove nothing.
+jest.mock("../../src/env", () => ({
+  env: { R2_PUBLIC_BASE_URL: "https://media.sqftex.test", R2_BUCKET_NAME: "sqftex-media" },
+}));
+
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { uploadPublicObject, uploadPrivateObject, getPresignedUrl } from "../../src/storage/r2";
@@ -548,7 +555,7 @@ describe("R2 storage helper", () => {
   it("uploads a public object and returns a public URL under R2_PUBLIC_BASE_URL", async () => {
     const url = await uploadPublicObject(Buffer.from("fake-image"), "image/jpeg", "photo.jpg");
     expect(sendMock).toHaveBeenCalledWith(expect.any(PutObjectCommand));
-    expect(url.startsWith(process.env.R2_PUBLIC_BASE_URL || "")).toBe(true);
+    expect(url.startsWith("https://media.sqftex.test/")).toBe(true);
     expect(url).toMatch(/public\/listings\/.+\.jpg$/);
   });
 
@@ -566,9 +573,6 @@ describe("R2 storage helper", () => {
   });
 });
 ```
-
-Add `R2_PUBLIC_BASE_URL=https://media.sqftex.test` to `backend/.env` if not already a real value
-(needed for the URL-prefix assertion above to be meaningful).
 
 - [ ] **Step 3: Run test to verify it fails**
 
@@ -1655,7 +1659,9 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Test: `backend/tests/admin.test.ts`
 
 **Interfaces:**
-- Consumes: `prisma` (Task 3), `env` (Task 2), `getPresignedUrl` (Task 4).
+- Consumes: `prisma` (Task 3), `env` (Task 2). (Not `getPresignedUrl` — AdminJS's default UI
+  shows `nricPhotoUrl` as a plain string field for v1; a custom preview component is a follow-up,
+  not part of this task's code.)
 - Produces: `adminRouter` mounted at `/admin` in `src/app.ts`.
 
 - [ ] **Step 1: Install AdminJS**
