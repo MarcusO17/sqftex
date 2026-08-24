@@ -1,75 +1,134 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { landingColors as c } from "./tokens";
 
-// Aceternity-style 3D tilt card (see "3D Card Effect" at
-// https://ui.aceternity.com/components): the card tilts in 3D toward the
-// cursor and a soft light follows the pointer, settling back to flat on
-// mouse leave. Reimplemented here with plain mousemove + CSS transforms
-// instead of the framer-motion version Aceternity ships, since this is the
-// only place on the page that needs it and doesn't warrant a new animation
-// dependency. It's the one piece of Hero.tsx that needs real interactivity
-// (mouse position), so it's split out as its own client component — Hero
-// itself stays a Server Component.
-export function HeroFeatureCard() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glowX: 50, glowY: 50, scale: 1 });
+type FeatureCard = {
+  id: number;
+  title: string;
+  body: string;
+  bg: string;
+};
 
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    setTilt({
-      rotateX: (0.5 - py) * 14,
-      rotateY: (px - 0.5) * 14,
-      glowX: px * 100,
-      glowY: py * 100,
-      scale: 1.03,
+// Placeholder copy — one highlight per card, pulled from the business rules
+// in CLAUDE.md/PRD (escrow release on move-in, mandatory NRIC verification,
+// no-lease "visiting" access model). Edit freely.
+const FEATURE_CARDS: FeatureCard[] = [
+  {
+    id: 1,
+    title: "No lease.",
+    body: "Book any space by the day or the month — cancel anytime.",
+    bg: c.accent,
+  },
+  {
+    id: 2,
+    title: "NRIC-verified hosts.",
+    body: "Every host completes ID verification before their listing goes live.",
+    bg: c.categoryGarage,
+  },
+  {
+    id: 3,
+    title: "Escrow protected.",
+    body: "Payment is held until you confirm move-in — never released early.",
+    bg: c.categoryWarehouse,
+  },
+  {
+    id: 4,
+    title: "Search in minutes.",
+    body: "No paperwork, no long contracts, no hidden fees.",
+    bg: c.categoryContainer,
+  },
+];
+
+const CARD_OFFSET = 14;
+const SCALE_FACTOR = 0.05;
+
+// Aceternity-style "Card Stack" (https://ui.aceternity.com/components/card-stack):
+// a deck of cards peeking out behind one another. Aceternity's own version
+// auto-advances on a timer (built for a testimonial marquee); this one
+// advances on click instead, since here it's a feature highlight the visitor
+// is meant to flip through deliberately, not a passive loop. All four cards
+// stay mounted the whole time — flipping just reorders the array, so
+// framer-motion animates each card's position/scale/z-index between spots
+// in the stack rather than mounting/unmounting anything.
+export function HeroFeatureCard() {
+  const [cards, setCards] = useState(FEATURE_CARDS);
+
+  function advance() {
+    setCards((prev) => {
+      const next = [...prev];
+      next.push(next.shift()!);
+      return next;
     });
   }
 
-  function handleMouseLeave() {
-    setTilt({ rotateX: 0, rotateY: 0, glowX: 50, glowY: 50, scale: 1 });
-  }
-
   return (
-    <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        position: "relative",
-        zIndex: 1,
-        width: 480,
-        height: 520,
-        borderRadius: 28,
-        background: `radial-gradient(circle at ${tilt.glowX}% ${tilt.glowY}%, rgba(255,255,255,0.28), transparent 55%), ${c.accent}`,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        padding: 40,
-        boxShadow: "0 30px 70px rgba(8,145,178,0.28)",
-        transform: `perspective(900px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${tilt.scale})`,
-        transition: "transform 0.2s ease-out, background 0.2s ease-out",
-        willChange: "transform",
-      }}
-    >
-      <span
-        style={{
-          fontFamily: "var(--font-landing-heading), sans-serif",
-          fontWeight: 700,
-          fontSize: 44,
-          color: "#FFFFFF",
-          lineHeight: 1.1,
-        }}
-      >
-        No lease.
-      </span>
-      <span style={{ fontSize: 16, fontWeight: 600, color: "#CFF0F6", marginTop: 12 }}>
-        Book any space by the day or the month &mdash; cancel anytime.
-      </span>
+    <div style={{ position: "relative", zIndex: 1, width: 480, height: 520 }}>
+      {cards.map((card, index) => {
+        const isFront = index === 0;
+        return (
+          <motion.div
+            key={card.id}
+            onClick={isFront ? advance : undefined}
+            animate={{
+              top: index * -CARD_OFFSET,
+              scale: 1 - index * SCALE_FACTOR,
+              zIndex: cards.length - index,
+            }}
+            transition={{ type: "spring", stiffness: 260, damping: 24 }}
+            whileHover={isFront ? { scale: 1 - index * SCALE_FACTOR + 0.015 } : undefined}
+            whileTap={isFront ? { scale: 1 - index * SCALE_FACTOR - 0.02 } : undefined}
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              transformOrigin: "top center",
+              width: 480,
+              height: 480,
+              borderRadius: 28,
+              background: card.bg,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              padding: 40,
+              boxShadow: "0 30px 70px rgba(14,13,16,0.28)",
+              cursor: isFront ? "pointer" : "default",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-landing-heading), sans-serif",
+                fontWeight: 700,
+                fontSize: 44,
+                color: "#FFFFFF",
+                lineHeight: 1.1,
+              }}
+            >
+              {card.title}
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: "rgba(255,255,255,0.85)", marginTop: 12 }}>
+              {card.body}
+            </span>
+            {isFront && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 20,
+                  right: 24,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "rgba(255,255,255,0.7)",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Tap to flip &rarr;
+              </span>
+            )}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

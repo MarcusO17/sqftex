@@ -23,7 +23,7 @@ export function Hero() {
             textTransform: "uppercase",
           }}
         >
-          Now live &mdash; Klang Valley
+          Now live
         </div>
         <h1
           style={{
