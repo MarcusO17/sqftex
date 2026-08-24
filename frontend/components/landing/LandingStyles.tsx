@@ -1,10 +1,13 @@
-// This page deliberately doesn't touch the shared globals.css (see
-// tokens.ts), so its dark-mode support lives here too: CSS custom
-// properties with a light default and a `prefers-color-scheme: dark`
-// override, consumed by the landing components as `var(--landing-*)`
-// instead of literal hex for anything that needs to flip between themes.
-// Defaults to the visitor's OS/browser setting; ThemeToggle.tsx sets
-// `data-theme` on <html> to let a visitor override that explicitly.
+// Dark mode is now shared app-wide (app/globals.css has its own light/dark
+// --ink/--paper/--card/--line, same values as the ones defined here) — this
+// file still defines its own --landing-* namespace for values only the
+// landing page needs (nav background/blur, the ghost wordmark tint, the
+// inverse btn-bg/text pair for solid buttons) rather than folding those
+// into the shared tokens too. Same light-default +
+// `prefers-color-scheme: dark` + `data-theme` override pattern either way.
+// Defaults to the visitor's OS/browser setting; ThemeToggle
+// (components/layout/ThemeToggle.tsx) sets `data-theme` on <html> to let a
+// visitor override that explicitly — shared by LandingNav and NavBar.
 //
 // Brand/category colors (teal accent, category tile colors, etc.) are
 // intentionally NOT themed here — they're vivid enough to read on both a
@@ -107,13 +110,6 @@ const css = `
          the universal * transition above doesn't reach them. */
       .landing-nav {
         transition: top 0.25s ease, width 0.25s ease, height 0.25s ease, padding 0.25s ease, box-shadow 0.3s ease;
-      }
-      .landing-theme-toggle {
-        transition: background 0.2s ease, transform 0.2s ease, color 0.25s ease;
-      }
-      .landing-theme-toggle:hover {
-        background: var(--landing-line);
-        transform: rotate(14deg);
       }
       .landing-category-tile {
         transition: transform 0.25s ease;

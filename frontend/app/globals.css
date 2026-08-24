@@ -7,11 +7,15 @@
      docs/superpowers/specs/2026-08-23-landing-page-redesign-design.md,
      "Open items" #6) so the rest of the app — /login, /listings/*, and
      shadcn/ui components below — reads as one system instead of two.
-     Dark mode stays landing-only for now; these are light-mode-only. */
+     Light-mode values; see the dark-mode block below for the other two
+     theme states (same 3-state pattern as LandingStyles.tsx). */
   --ink: #0e0d10;
   --paper: #fafafb;
   --card: #f2f1f4;
   --line: #e2e1e6;
+  /* Brand/accent colors are NOT themed (same call as LandingStyles.tsx) —
+     teal/orange are vivid enough to read on both a light and dark page
+     background, so they stay literal hex in both modes. */
   --primary: #0891b2;
   --primary-dark: #066e8a;
   --secondary: #ff7a1e;
@@ -47,8 +51,85 @@
   --radius: 0.75rem;
 }
 
+/* Dark mode — defaults to the visitor's OS/browser setting; ThemeToggle
+   (components/layout/ThemeToggle.tsx, rendered in NavBar and the landing
+   page's nav) sets data-theme on <html> to override that explicitly, same
+   mechanism LandingStyles.tsx already uses for --landing-*. An explicit
+   light choice always wins over a dark OS preference (the :not([data-
+   theme="light"]) guard), and the toggle wins in both directions via the
+   [data-theme="dark"] block below repeating the same values. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #f5f3ef;
+    --paper: #0e0d10;
+    --card: #17151a;
+    --line: #2a2730;
+
+    --background: 260 10% 6%;
+    --foreground: 40 23% 95%;
+    --card-shadcn: 264 11% 9%;
+    --card-shadcn-foreground: 40 23% 95%;
+    --popover: 260 10% 6%;
+    --popover-foreground: 40 23% 95%;
+    --muted: 264 11% 9%;
+    --muted-foreground: 263 8% 66%;
+    --accent: 264 11% 9%;
+    --accent-foreground: 40 23% 95%;
+    --border: 260 10% 17%;
+    --input: 260 10% 17%;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #f5f3ef;
+  --paper: #0e0d10;
+  --card: #17151a;
+  --line: #2a2730;
+
+  --background: 260 10% 6%;
+  --foreground: 40 23% 95%;
+  --card-shadcn: 264 11% 9%;
+  --card-shadcn-foreground: 40 23% 95%;
+  --popover: 260 10% 6%;
+  --popover-foreground: 40 23% 95%;
+  --muted: 264 11% 9%;
+  --muted-foreground: 263 8% 66%;
+  --accent: 264 11% 9%;
+  --accent-foreground: 40 23% 95%;
+  --border: 260 10% 17%;
+  --input: 260 10% 17%;
+}
+
 * {
   box-sizing: border-box;
+}
+
+/* Smooths the light/dark switch app-wide (mirrors the same rule in
+   LandingStyles.tsx, which only covers the landing page's own DOM
+   lifecycle) — ThemeToggle flips data-theme instantly, which snaps every
+   variable above to its new value; this tweens the properties reading
+   them instead of letting it snap. */
+*,
+*::before,
+*::after {
+  transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease, box-shadow 0.35s ease, fill 0.35s ease,
+    stroke 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+
+/* ThemeToggle (components/layout/ThemeToggle.tsx) — shared by NavBar and
+   LandingNav, was landing-only CSS before dark mode went app-wide. */
+.theme-toggle {
+  transition: background 0.2s ease, transform 0.2s ease, color 0.25s ease;
+}
+.theme-toggle:hover {
+  background: var(--line);
+  transform: rotate(14deg);
 }
 
 html,

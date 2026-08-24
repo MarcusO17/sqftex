@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Shared top nav. "guest" is shown on marketing/auth screens (landing, login);
 // "app" is shown on the logged-in surfaces (browse, listing detail, create
@@ -44,16 +45,19 @@ export function NavBar({ variant }: NavBarProps) {
         )}
       </div>
 
-      <SignedOut>
-        <SignInButton mode="modal">
-          <button type="button" className="btn-primary">
-            Log in
-          </button>
-        </SignInButton>
-      </SignedOut>
-      <SignedIn>
-        <UserButton afterSignOutUrl="/" />
-      </SignedIn>
+      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <ThemeToggle />
+        <SignedOut>
+          <SignInButton mode="modal">
+            <button type="button" className="btn-primary">
+              Log in
+            </button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+      </div>
     </div>
   );
 }

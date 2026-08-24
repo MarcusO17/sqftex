@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from "react";
 
-// The one interactive piece of the landing page — everything else is a
-// Server Component. Sets data-theme on <html> at runtime (not a change to
-// the shared root layout file) so LandingStyles.tsx's CSS variables can
-// pick a theme explicitly, overriding the automatic prefers-color-scheme
-// default. Choice persists in localStorage.
+// Sets data-theme on <html> at runtime so the CSS variables in
+// app/globals.css (and LandingStyles.tsx's --landing-* aliases, on the
+// landing page) can pick a theme explicitly, overriding the automatic
+// prefers-color-scheme default. Choice persists in localStorage. Shared by
+// NavBar (every non-landing page) and LandingNav — previously landing-only,
+// which meant toggling dark mode there did nothing everywhere else: the
+// attribute is set on <html> so it did carry over on navigation, but
+// app/globals.css had no dark-mode values at all for NavBar (or anything
+// else outside the landing page) to react to.
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("landing-theme");
+    const stored = window.localStorage.getItem("theme");
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const initial = stored === "light" || stored === "dark" ? stored : systemPrefersDark ? "dark" : "light";
     setTheme(initial);
@@ -22,7 +26,7 @@ export function ThemeToggle() {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
-    window.localStorage.setItem("landing-theme", next);
+    window.localStorage.setItem("theme", next);
   }
 
   return (
@@ -30,7 +34,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className="landing-theme-toggle"
+      className="theme-toggle"
       style={{
         display: "flex",
         alignItems: "center",
@@ -41,7 +45,7 @@ export function ThemeToggle() {
         border: "none",
         background: "transparent",
         cursor: "pointer",
-        color: "var(--landing-ink)",
+        color: "var(--ink)",
       }}
     >
       {theme === "dark" ? (
