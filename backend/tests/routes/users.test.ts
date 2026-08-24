@@ -26,7 +26,7 @@ describe("users routes", () => {
 
   it("GET /api/v1/users/me/ returns 401 when unauthenticated", async () => {
     (getAuth as jest.Mock).mockReturnValue({ userId: null });
-    const res = await request(createApp()).get("/api/v1/users/me/");
+    const res = await request(await createApp()).get("/api/v1/users/me/");
     expect(res.status).toBe(401);
   });
 
@@ -36,7 +36,7 @@ describe("users routes", () => {
       emailAddresses: [{ emailAddress: "me-test@example.com" }],
     });
 
-    const res = await request(createApp()).get("/api/v1/users/me/");
+    const res = await request(await createApp()).get("/api/v1/users/me/");
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ email: "me-test@example.com", is_verified: false });
   });
@@ -47,13 +47,13 @@ describe("users routes", () => {
       emailAddresses: [{ emailAddress: "verify-test@example.com" }],
     });
 
-    const first = await request(createApp())
+    const first = await request(await createApp())
       .post("/api/v1/users/verification/")
       .attach("nric_photo", Buffer.from("fake-image-bytes"), "nric.jpg");
     expect(first.status).toBe(201);
     expect(first.body.status).toBe("pending");
 
-    const second = await request(createApp())
+    const second = await request(await createApp())
       .post("/api/v1/users/verification/")
       .attach("nric_photo", Buffer.from("fake-image-bytes"), "nric.jpg");
     expect(second.status).toBe(400);

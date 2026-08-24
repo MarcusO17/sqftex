@@ -6,17 +6,22 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
-    "test": "jest --runInBand",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@adminjs/express": "^6.1.1",
+    "@adminjs/prisma": "^5.0.4",
     "@aws-sdk/client-s3": "^3.1116.0",
     "@aws-sdk/s3-request-presigner": "^3.1116.0",
     "@clerk/express": "^2.1.61",
     "@prisma/client": "^6.19.3",
+    "adminjs": "^7.8.17",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-formidable": "^1.2.0",
+    "express-session": "^1.19.0",
     "multer": "^2.2.0",
     "prisma": "^6.19.3",
     "zod": "^3.23.8"
@@ -24,6 +29,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/express-session": "^1.19.0",
     "@types/jest": "^29.5.12",
     "@types/multer": "^2.2.0",
     "@types/node": "^20.14.15",

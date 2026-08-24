@@ -1676,7 +1676,42 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Consumes: `prisma` (Task 3), `env` (Task 2). (Not `getPresignedUrl` — AdminJS's default UI
   shows `nricPhotoUrl` as a plain string field for v1; a custom preview component is a follow-up,
   not part of this task's code.)
-- Produces: `adminRouter` mounted at `/admin` in `src/app.ts`.
+- Produces: `buildAdminRouter(): Promise<Router>` (not a plain `adminRouter` value — see the ESM
+  note below), mounted at `/admin` in `src/app.ts`.
+
+**Three corrections found during implementation (all reflected in the code below):**
+
+1. **`adminjs`@7.x and `@adminjs/prisma`@5.x are ESM-only** (`"type": "module"`), but this backend
+   is CommonJS (Jest + ts-jest + classic `moduleResolution`, established in Task 1). A static
+   `import`/`require` of them fails at runtime with `ERR_REQUIRE_ESM`. Fix: load them via a
+   dynamic `import()` built with `new Function("specifier", "return import(specifier)")` instead
+   of a literal `import()` expression — TypeScript, when compiling to CommonJS, downlevels a
+   literal `import()` into `Promise.resolve().then(() => require(...))`, which is still a
+   `require` and hits the same error; building the call at runtime with `new Function` is the
+   standard workaround. This makes `createApp()` itself `async` (it awaits the admin router
+   build), which ripples into every caller: `server.ts` wraps its startup in an async `main()`,
+   and every test file's `createApp()` call sites need `await`.
+2. **The router must be mounted under its own `rootPath`**, i.e. `app.use("/admin", await
+   buildAdminRouter())` — not the bare `app.use(adminRouter)` this task originally specified.
+   `@adminjs/express`'s internal routes (e.g. the login page) are registered relative to
+   `admin.options.rootPath` (so `/admin/login` becomes just `/login` internally), on the
+   assumption the router is mounted at that same prefix. Mounting it bare put `/login` at the
+   site root instead of `/admin/login`, and AdminJS's own unauthenticated-redirect (which targets
+   the absolute `/admin/login`) then bounced forever since nothing was listening there.
+3. **Run tests without `--runInBand`.** Jest's `--experimental-vm-modules` (required for #1's
+   dynamic import to work inside Jest at all, not just under plain `tsx`/`node` — without it,
+   Jest's sandboxed VM throws "A dynamic import callback was invoked without
+   --experimental-vm-modules") combined with `--runInBand` intermittently threw "Test environment
+   has been torn down" for the third and later test files in a run: Node's real ESM loader caches
+   an imported module process-globally, but Jest tears down each test file's VM context
+   individually, and the two don't agree once more than ~2 files share a process. Running each
+   file in Jest's normal separate-worker-process model (i.e. dropping `--runInBand` — the default
+   `test` script no longer passes it) sidesteps this entirely, and is safe here regardless: every
+   test file already scopes its Postgres rows to a distinct `clerkUserId` prefix
+   (`test_users_*`, `test_listings_*`, `test_pub_*`, ...), so parallel workers don't collide.
+   `jest.config.js` also raises `testTimeout` to 30s, since AdminJS's cold bundle build
+   (~2.5s, paid once per test file since Jest resets the module registry per file) blew past the
+   5s default under load.
 
 - [ ] **Step 1: Install AdminJS**
 
@@ -1797,14 +1832,21 @@ attribute the review to (matches the "one operator reviews NRIC uploads" reality
 
 - [ ] **Step 5: Wire it into `src/app.ts`**
 
-Modify `backend/src/app.ts`:
+Modify `backend/src/app.ts` — per correction #1 above, `createApp()` becomes `async` and every
+existing caller (including every earlier task's tests) needs an `await` added at its call site;
+per correction #2, the router is mounted **at** `/admin`, not bare:
 ```ts
-import { adminRouter } from "./admin/adminRouter";
+import { buildAdminRouter } from "./admin/adminRouter";
 // ...
-  app.use(adminRouter);
+export async function createApp(): Promise<Express> {
+  // ...
+  app.use(clerkAuth);
+  app.use("/admin", await buildAdminRouter());
+  // ... (rest of the route mounting, then `return app;`)
+}
 ```
-(add this line right after `app.use(clerkAuth);` — before the `/health` route — so `/admin` isn't
-shadowed by anything else; AdminJS's router owns the full `/admin` prefix internally)
+(mount it right after `app.use(clerkAuth);` — before the `/health` route — so `/admin` isn't
+shadowed by anything else)
 
 - [ ] **Step 6: Run test to verify it passes**
 

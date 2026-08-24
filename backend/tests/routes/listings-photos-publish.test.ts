@@ -48,7 +48,7 @@ describe("listings photos + publish routes", () => {
     const listing = await makeDraftListing(owner.id);
     authAs("test_pub_1", "pub1@example.com");
 
-    const res = await request(createApp()).post(`/api/v1/listings/${listing.id}/publish/`);
+    const res = await request(await createApp()).post(`/api/v1/listings/${listing.id}/publish/`);
     expect(res.status).toBe(400);
   });
 
@@ -57,13 +57,13 @@ describe("listings photos + publish routes", () => {
     const listing = await makeDraftListing(owner.id);
     authAs("test_pub_2", "pub2@example.com");
 
-    const photoRes = await request(createApp())
+    const photoRes = await request(await createApp())
       .post(`/api/v1/listings/${listing.id}/photos/`)
       .attach("image", Buffer.from("fake-image-bytes"), "cover.jpg");
     expect(photoRes.status).toBe(201);
     expect(photoRes.body.image).toBe("https://media.sqftex.test/public/listings/fake.jpg");
 
-    const publishRes = await request(createApp()).post(`/api/v1/listings/${listing.id}/publish/`);
+    const publishRes = await request(await createApp()).post(`/api/v1/listings/${listing.id}/publish/`);
     expect(publishRes.status).toBe(200);
     expect(publishRes.body.status).toBe("active");
     expect(publishRes.body.photos).toHaveLength(1);
@@ -75,7 +75,7 @@ describe("listings photos + publish routes", () => {
     const listing = await makeDraftListing(owner.id);
 
     authAs("test_pub_4", "pub4@example.com");
-    const res = await request(createApp())
+    const res = await request(await createApp())
       .post(`/api/v1/listings/${listing.id}/photos/`)
       .attach("image", Buffer.from("fake"), "x.jpg");
     expect(res.status).toBe(404);

@@ -63,7 +63,7 @@ describe("listings routes", () => {
     await makeUser("test_listings_unverified", "unverified@example.com", false);
     authAs("test_listings_unverified", "unverified@example.com");
 
-    const res = await request(createApp()).post("/api/v1/listings/").send(validInput);
+    const res = await request(await createApp()).post("/api/v1/listings/").send(validInput);
     expect(res.status).toBe(400);
   });
 
@@ -71,7 +71,7 @@ describe("listings routes", () => {
     await makeUser("test_listings_owner", "owner@example.com", true);
     authAs("test_listings_owner", "owner@example.com");
 
-    const res = await request(createApp()).post("/api/v1/listings/").send(validInput);
+    const res = await request(await createApp()).post("/api/v1/listings/").send(validInput);
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
       title: "Spare Room",
@@ -92,7 +92,7 @@ describe("listings routes", () => {
     });
 
     anon();
-    const res = await request(createApp()).get("/api/v1/listings/");
+    const res = await request(await createApp()).get("/api/v1/listings/");
     expect(res.status).toBe(200);
     const titles = res.body.map((l: any) => l.title);
     expect(titles).toContain("Active One");
@@ -107,14 +107,14 @@ describe("listings routes", () => {
     });
 
     authAs("test_listings_owner3", "owner3@example.com");
-    const okRes = await request(createApp())
+    const okRes = await request(await createApp())
       .patch(`/api/v1/listings/${listing.id}/`)
       .send({ title: "Updated Title" });
     expect(okRes.status).toBe(200);
     expect(okRes.body.title).toBe("Updated Title");
 
     authAs("test_listings_other", "other@example.com");
-    const forbiddenRes = await request(createApp())
+    const forbiddenRes = await request(await createApp())
       .patch(`/api/v1/listings/${listing.id}/`)
       .send({ title: "Hijacked" });
     expect(forbiddenRes.status).toBe(404);
@@ -127,7 +127,7 @@ describe("listings routes", () => {
     });
 
     authAs("test_listings_owner4", "owner4@example.com");
-    const res = await request(createApp()).delete(`/api/v1/listings/${listing.id}/`);
+    const res = await request(await createApp()).delete(`/api/v1/listings/${listing.id}/`);
     expect(res.status).toBe(204);
 
     const gone = await prisma.listing.findUnique({ where: { id: listing.id } });
