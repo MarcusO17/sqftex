@@ -40,19 +40,25 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
             >
               {listing.photos.length > 0 ? (
                 listing.photos.map((photo) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  // Frame clips the pop so a hovered photo scales up inside
+                  // its own rounded border instead of spilling over the
+                  // grid gap into neighboring photos.
+                  <div
                     key={photo.id}
-                    src={photo.image}
-                    alt={listing.title}
                     style={{
-                      width: "100%",
                       height: 260,
-                      objectFit: "cover",
+                      overflow: "hidden",
                       border: "1px solid var(--line)",
                       borderRadius: 14,
                     }}
-                  />
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photo.image}
+                      alt={listing.title}
+                      className="h-full w-full object-cover transition-transform duration-300 ease-out hover:scale-110"
+                    />
+                  </div>
                 ))
               ) : (
                 <div
