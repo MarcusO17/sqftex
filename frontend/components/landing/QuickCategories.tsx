@@ -43,7 +43,7 @@ function CategoryTile({
       >
         {children}
       </div>
-      <span style={{ fontSize: 12.5, fontWeight: 700, color: c.ink }}>{label}</span>
+      <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--landing-ink)" }}>{label}</span>
     </Link>
   );
 }

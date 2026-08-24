@@ -8,9 +8,9 @@ function LocationChip({ label, active }: { label: string; active: boolean }) {
     <Link
       href="/listings"
       style={{
-        border: `1px solid ${active ? c.ink : c.line}`,
-        color: active ? "#FFFFFF" : c.muted,
-        background: active ? c.ink : "transparent",
+        border: `1px solid ${active ? "var(--landing-btn-bg)" : "var(--landing-line)"}`,
+        color: active ? "var(--landing-btn-text)" : "var(--landing-muted)",
+        background: active ? "var(--landing-btn-bg)" : "transparent",
         fontWeight: 700,
         fontSize: 12.5,
         padding: "12px 16px",
@@ -38,8 +38,8 @@ function MapPin({ left, top, label, primary }: { left: number; top: number; labe
     >
       <div
         style={{
-          background: primary ? c.ink : "#FFFFFF",
-          color: primary ? "#FFFFFF" : c.ink,
+          background: primary ? "var(--landing-btn-bg)" : "var(--landing-card)",
+          color: primary ? "var(--landing-btn-text)" : "var(--landing-ink)",
           fontWeight: primary ? 800 : 700,
           fontSize: primary ? 13 : 12,
           padding: primary ? "8px 13px" : "7px 12px",
@@ -54,7 +54,7 @@ function MapPin({ left, top, label, primary }: { left: number; top: number; labe
         style={{
           width: primary ? 9 : 8,
           height: primary ? 9 : 8,
-          background: primary ? c.ink : "#FFFFFF",
+          background: primary ? "var(--landing-btn-bg)" : "var(--landing-card)",
           transform: "rotate(45deg)",
           marginTop: -4,
         }}
@@ -73,7 +73,7 @@ export function ExploreMap() {
               fontFamily: "var(--font-landing-heading), sans-serif",
               fontWeight: 700,
               fontSize: 26,
-              color: c.ink,
+              color: "var(--landing-ink)",
               margin: "0 0 8px 0",
               textTransform: "uppercase",
               letterSpacing: "-0.01em",
@@ -81,7 +81,7 @@ export function ExploreMap() {
           >
             Explore on the map
           </h2>
-          <p style={{ fontSize: 14.5, color: c.muted, margin: 0 }}>Verified spaces across the Klang Valley.</p>
+          <p style={{ fontSize: 14.5, color: "var(--landing-muted)", margin: 0 }}>Verified spaces across the Klang Valley.</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {locations.map((label, i) => (

@@ -17,4 +17,8 @@ export const landingColors = {
   categoryContainer: "#16A863",
   verified: "#16A863",
   dark: "#0E0D10",
+  // Fixed (not theme-reactive) — for text on HostBand, which is a permanently
+  // dark band regardless of the page's light/dark toggle. --landing-muted
+  // can't be used there since it flips to a light-mode-unsafe value.
+  mutedOnDark: "#A8A3B0",
 } as const;

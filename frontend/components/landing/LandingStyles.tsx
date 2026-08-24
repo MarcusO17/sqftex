@@ -11,6 +11,12 @@
 // light and a dark page background, so they stay as literal hex in the
 // components that use them.
 //
+// --landing-btn-bg/--landing-btn-text are a separate "inverse" pair for
+// solid ink-colored buttons (Search, Get started, active map chips). They
+// can't just reuse --landing-ink/--landing-paper: those two swap meaning
+// between themes, which would turn a dark button with white text into a
+// near-invisible light-on-light button once the page flips to dark mode.
+//
 // A plain <style> tag works fine in a Server Component — no "use client"
 // needed for either the variables or the one hover interaction below.
 export function LandingStyles() {
@@ -25,6 +31,8 @@ export function LandingStyles() {
         --landing-nav-bg: rgba(255,255,255,0.92);
         --landing-nav-link: #4A4750;
         --landing-ghost: #F0F0F3;
+        --landing-btn-bg: #0E0D10;
+        --landing-btn-text: #FFFFFF;
       }
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
@@ -36,6 +44,8 @@ export function LandingStyles() {
           --landing-nav-bg: rgba(23,21,26,0.92);
           --landing-nav-link: #C7C2CE;
           --landing-ghost: #1C1A20;
+          --landing-btn-bg: #F5F3EF;
+          --landing-btn-text: #0E0D10;
         }
       }
       :root[data-theme="dark"] {
@@ -47,6 +57,8 @@ export function LandingStyles() {
         --landing-nav-bg: rgba(23,21,26,0.92);
         --landing-nav-link: #C7C2CE;
         --landing-ghost: #1C1A20;
+        --landing-btn-bg: #F5F3EF;
+        --landing-btn-text: #0E0D10;
       }
       .landing-navlink:hover { color: var(--landing-ink); }
       .landing-theme-toggle:hover { background: var(--landing-line); }

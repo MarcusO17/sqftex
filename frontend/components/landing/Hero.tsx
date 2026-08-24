@@ -29,7 +29,7 @@ export function Hero() {
             fontWeight: 700,
             fontSize: 80,
             lineHeight: 1,
-            color: c.ink,
+            color: "var(--landing-ink)",
             margin: 0,
             letterSpacing: "-0.02em",
             textTransform: "uppercase",
@@ -45,7 +45,7 @@ export function Hero() {
             fast.
           </span>
         </h1>
-        <p style={{ fontSize: 18, lineHeight: 1.6, color: c.muted, margin: "8px 0 0 0", maxWidth: 440 }}>
+        <p style={{ fontSize: 18, lineHeight: 1.6, color: "var(--landing-muted)", margin: "8px 0 0 0", maxWidth: 440 }}>
           Book a storage room, garage bay or warehouse unit from a verified host near you &mdash;
           by the day or by the month, no lease required.
         </p>
@@ -57,8 +57,8 @@ export function Hero() {
             display: "flex",
             alignItems: "center",
             gap: 10,
-            background: "#FFFFFF",
-            border: `1px solid ${c.line}`,
+            background: "var(--landing-card)",
+            border: "1px solid var(--landing-line)",
             borderRadius: 12,
             padding: "8px 8px 8px 20px",
             marginTop: 14,
@@ -66,7 +66,7 @@ export function Hero() {
             boxShadow: "0 10px 26px rgba(14,13,16,0.05)",
           }}
         >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={c.muted} strokeWidth="1.8">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--landing-muted)" strokeWidth="1.8">
             <circle cx="12" cy="10" r="3" />
             <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0114 0c0 3-3 6.5-7 11z" />
           </svg>
@@ -80,7 +80,7 @@ export function Hero() {
               fontFamily: "inherit",
               fontSize: 15,
               fontWeight: 500,
-              color: c.ink,
+              color: "var(--landing-ink)",
               flex: 1,
               background: "transparent",
             }}
@@ -88,8 +88,8 @@ export function Hero() {
           <button
             type="submit"
             style={{
-              background: c.ink,
-              color: "#FFFFFF",
+              background: "var(--landing-btn-bg)",
+              color: "var(--landing-btn-text)",
               fontWeight: 700,
               fontSize: 14,
               padding: "12px 22px",
@@ -103,7 +103,7 @@ export function Hero() {
           </button>
         </form>
 
-        <Link href="/listings/new" style={{ fontSize: 14, color: c.muted, fontWeight: 600, marginTop: 8 }}>
+        <Link href="/listings/new" style={{ fontSize: 14, color: "var(--landing-muted)", fontWeight: 600, marginTop: 8 }}>
           Have spare space instead?{" "}
           <span style={{ textDecoration: "underline" }}>List it and start earning &rarr;</span>
         </Link>
@@ -125,7 +125,7 @@ export function Hero() {
             fontFamily: "var(--font-landing-heading), sans-serif",
             fontWeight: 700,
             fontSize: 170,
-            color: "#F0F0F3",
+            color: "var(--landing-ghost)",
             zIndex: 0,
             userSelect: "none",
             lineHeight: 1,

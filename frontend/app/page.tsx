@@ -8,7 +8,6 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { TrustStrip } from "@/components/landing/TrustStrip";
 import { HostBand } from "@/components/landing/HostBand";
 import { LandingFooter } from "@/components/landing/LandingFooter";
-import { landingColors as c } from "@/components/landing/tokens";
 
 const unbounded = Unbounded({
   subsets: ["latin"],
@@ -28,7 +27,7 @@ export default function Home() {
       style={{
         position: "relative",
         fontFamily: "var(--font-landing-body), system-ui, sans-serif",
-        background: c.paper,
+        background: "var(--landing-paper)",
       }}
     >
       <LandingStyles />

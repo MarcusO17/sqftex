@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { landingColors as c } from "./tokens";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function LandingNav() {
@@ -63,8 +62,8 @@ export function LandingNav() {
         <Link
           href="/listings"
           style={{
-            background: c.ink,
-            color: "#FFFFFF",
+            background: "var(--landing-btn-bg)",
+            color: "var(--landing-btn-text)",
             fontWeight: 700,
             fontSize: 14,
             padding: "12px 22px",

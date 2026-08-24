@@ -28,7 +28,7 @@ export function HostBand() {
         >
           Have spare space?
         </h2>
-        <p style={{ fontSize: 15.5, lineHeight: 1.6, color: c.muted, margin: 0 }}>
+        <p style={{ fontSize: 15.5, lineHeight: 1.6, color: c.mutedOnDark, margin: 0 }}>
           A spare room, garage or empty floor can start earning within days. Verification is
           quick, and payouts are protected until move-in is confirmed.
         </p>
