@@ -67,9 +67,18 @@ async function findListingForRequest(id: number, dbUserId?: number) {
 }
 
 listingsRouter.get("/", attachDbUserIfPresent, async (req, res) => {
-  const where = req.dbUser
-    ? { OR: [{ status: ListingStatus.active }, { ownerId: req.dbUser.id }] }
-    : { status: ListingStatus.active };
+  const mine = req.query.mine === "1";
+  if (mine && !req.dbUser) {
+    res.status(401).json({ detail: "Authentication required." });
+    return;
+  }
+
+  const statusParam = typeof req.query.status === "string" ? req.query.status : undefined;
+  const where = mine
+    ? { ownerId: req.dbUser!.id, ...(statusParam ? { status: statusParam as ListingStatus } : {}) }
+    : req.dbUser
+      ? { OR: [{ status: ListingStatus.active }, { ownerId: req.dbUser.id }] }
+      : { status: ListingStatus.active };
 
   const listings = await prisma.listing.findMany({
     where,

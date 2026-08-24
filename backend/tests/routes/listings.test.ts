@@ -157,4 +157,30 @@ describe("listings routes", () => {
     const gone = await prisma.listing.findUnique({ where: { id: listing.id } });
     expect(gone).toBeNull();
   });
+
+  it("GET /?mine=1&status=draft returns only the caller's own drafts", async () => {
+    const owner = await makeUser("test_listings_mine", "mine@example.com", true);
+    const other = await makeUser("test_listings_mine_other", "mine_other@example.com", true);
+    await prisma.listing.create({
+      data: { ...dbFields, sizeSqft: 120, category: "spare_room", status: "draft", ownerId: owner.id, title: "My Draft" },
+    });
+    await prisma.listing.create({
+      data: { ...dbFields, sizeSqft: 120, priceCents: 15000, priceUnit: "monthly", category: "spare_room", status: "active", lat: 1, lng: 1, ownerId: owner.id, title: "My Active" },
+    });
+    await prisma.listing.create({
+      data: { ...dbFields, sizeSqft: 120, category: "spare_room", status: "draft", ownerId: other.id, title: "Someone Else's Draft" },
+    });
+
+    authAs("test_listings_mine", "mine@example.com");
+    const res = await request(await createApp()).get("/api/v1/listings/?mine=1&status=draft");
+    expect(res.status).toBe(200);
+    const titles = res.body.map((l: any) => l.title);
+    expect(titles).toEqual(["My Draft"]);
+  });
+
+  it("GET /?mine=1 requires auth", async () => {
+    anon();
+    const res = await request(await createApp()).get("/api/v1/listings/?mine=1");
+    expect(res.status).toBe(401);
+  });
 });
