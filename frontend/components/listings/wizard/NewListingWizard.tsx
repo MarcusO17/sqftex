@@ -24,10 +24,16 @@ export function NewListingWizard() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const token = await getToken();
-      if (!token) return;
-      const drafts = await listMyDraftListings(token);
-      if (!cancelled) setResumeDraft(drafts[0] ?? null);
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const drafts = await listMyDraftListings(token);
+        if (!cancelled) setResumeDraft(drafts[0] ?? null);
+      } catch {
+        // Draft check failed — fall back to a fresh wizard rather than
+        // stranding the user on a blank page.
+        if (!cancelled) setResumeDraft(null);
+      }
     })();
     return () => {
       cancelled = true;
@@ -56,6 +62,7 @@ export function NewListingWizard() {
   }
 
   function handleNext() {
+    if (submitting) return;
     if (stepIndex === 0) {
       if (!category) {
         setError("Pick a category to continue.");
@@ -66,6 +73,15 @@ export function NewListingWizard() {
       return;
     }
     handleContinueFromBasics();
+  }
+
+  function handleIndexChange(index: number) {
+    if (index > stepIndex && stepIndex === 0 && !category) {
+      setError("Pick a category to continue.");
+      return;
+    }
+    setError(null);
+    setStepIndex(index);
   }
 
   if (resumeDraft === undefined) {
@@ -121,7 +137,7 @@ export function NewListingWizard() {
         globalStepIndex={stepIndex}
         globalStepCount={6}
         category={category}
-        onIndexChange={setStepIndex}
+        onIndexChange={handleIndexChange}
         onNext={handleNext}
         nextLabel={submitting ? "Saving…" : "Continue →"}
         backDisabled={stepIndex === 0}

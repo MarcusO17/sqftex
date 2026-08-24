@@ -5,12 +5,13 @@ import { NavBar } from "@/components/layout/NavBar";
 import { getMe } from "@/lib/api/users";
 
 export default async function NewListingPage() {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) {
     redirect("/login");
   }
 
-  const me = await getMe();
+  const token = await getToken();
+  const me = await getMe(token);
 
   if (!me) {
     redirect("/login");
