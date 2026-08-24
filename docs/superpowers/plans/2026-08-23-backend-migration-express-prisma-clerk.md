@@ -1198,6 +1198,20 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Consumes: `requireAuth`, `attachDbUserIfPresent` (Task 5), `toListingJSON` (Task 6), `prisma` (Task 3).
 - Produces: `listingsRouter: Router`, mounted at `/api/v1/listings` in `src/app.ts`. Task 9 adds two more routes to this same router/file.
 
+**Corrections found during implementation (both below are already reflected
+in the code blocks in this task):** the input schema's field names mirror
+the API's snake_case JSON contract (`size_sqft`, `price_cents`, ...), but
+Prisma's generated types expect camelCase (`sizeSqft`, `priceCents`, ...).
+Spreading the parsed zod object straight into `prisma.listing.create`/
+`update` doesn't type-check — it needs an explicit snake_case→camelCase
+mapping step first (two variants, since create's fields are required and
+update's are partial). The test file's direct `prisma.listing.create()`
+calls (used to seed fixture rows, as opposed to going through the route)
+have the same issue in reverse: they can't spread `validInput` (snake_case,
+meant for HTTP request bodies) directly into a Prisma call — it sends
+unknown keys and Prisma rejects them. Those calls use a separate
+`dbFields` object with just the camelCase-appropriate keys instead.
+
 - [ ] **Step 1: Write the failing test**
 
 `backend/tests/routes/listings.test.ts`:

@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Express } from "express";
 import { clerkAuth } from "./middleware/auth";
+import { listingsRouter } from "./routes/listings";
 import { usersRouter } from "./routes/users";
 
 export function createApp(): Express {
@@ -14,6 +15,7 @@ export function createApp(): Express {
   });
 
   app.use("/api/v1/users", usersRouter);
+  app.use("/api/v1/listings", listingsRouter);
 
   return app;
 }
