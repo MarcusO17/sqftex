@@ -184,6 +184,16 @@ listingsRouter.post("/:id/publish/", requireAuth, async (req, res) => {
     res.status(400).json({ detail: "Add at least one photo before publishing." });
     return;
   }
+  const missingField =
+    listing.priceCents === null ||
+    listing.priceUnit === null ||
+    listing.address === null ||
+    listing.lat === null ||
+    listing.lng === null;
+  if (missingField) {
+    res.status(400).json({ detail: "Complete all steps before publishing." });
+    return;
+  }
   const updated = await prisma.listing.update({
     where: { id },
     data: { status: ListingStatus.active },

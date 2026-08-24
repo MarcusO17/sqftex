@@ -33,6 +33,12 @@ async function makeDraftListing(ownerId: number) {
   });
 }
 
+async function makeIncompleteDraftListing(ownerId: number) {
+  return prisma.listing.create({
+    data: { title: "Spare Room", description: "x", category: "spare_room", sizeSqft: 100, status: "draft", ownerId },
+  });
+}
+
 describe("listings photos + publish routes", () => {
   afterEach(async () => {
     await prisma.listing.deleteMany({ where: { owner: { clerkUserId: { startsWith: "test_pub_" } } } });
@@ -79,5 +85,19 @@ describe("listings photos + publish routes", () => {
       .post(`/api/v1/listings/${listing.id}/photos/`)
       .attach("image", Buffer.from("fake"), "x.jpg");
     expect(res.status).toBe(404);
+  });
+
+  it("POST /:id/publish/ rejects a draft missing price/address/location even with a photo", async () => {
+    const owner = await makeUser("test_pub_5", "pub5@example.com");
+    const listing = await makeIncompleteDraftListing(owner.id);
+    authAs("test_pub_5", "pub5@example.com");
+
+    await request(await createApp())
+      .post(`/api/v1/listings/${listing.id}/photos/`)
+      .attach("image", Buffer.from("fake"), "cover.jpg");
+
+    const res = await request(await createApp()).post(`/api/v1/listings/${listing.id}/publish/`);
+    expect(res.status).toBe(400);
+    expect(res.body.detail).toBe("Complete all steps before publishing.");
   });
 });
