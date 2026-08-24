@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --ink: #141414;
   --paper: #ffffff;
@@ -10,6 +14,32 @@
 
   --font-heading: var(--font-archivo), system-ui, sans-serif;
   --font-body: var(--font-work-sans), system-ui, -apple-system, sans-serif;
+
+  /* shadcn/ui tokens — HSL triples (no hsl() wrapper, per shadcn convention)
+     mapped from the hex tokens above so shadcn components (components/ui/*)
+     match the site's existing brand colors instead of introducing a second
+     palette. --radius is tuned for the landing page's rounded/pill CTAs;
+     individual components can still override radius per instance. */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 8%;
+  --card-shadcn: 43 24% 94%;
+  --card-shadcn-foreground: 0 0% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+  --primary-shadcn: 152 55% 24%;
+  --primary-shadcn-foreground: 0 0% 100%;
+  --secondary-shadcn: 31 81% 51%;
+  --secondary-shadcn-foreground: 0 0% 100%;
+  --muted: 43 24% 94%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 43 24% 94%;
+  --accent-foreground: 0 0% 8%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 44 15% 74%;
+  --input: 44 15% 74%;
+  --ring: 152 55% 40%;
+  --radius: 0.75rem;
 }
 
 * {
