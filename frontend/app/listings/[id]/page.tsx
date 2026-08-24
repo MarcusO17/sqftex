@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { getListing } from "@/lib/api/listings";
 import { categoryLabel } from "@/lib/listingCategories";
 import { NavBar } from "@/components/layout/NavBar";
 
 export default async function ListingDetailPage({ params }: { params: { id: string } }) {
-  const listing = await getListing(Number(params.id));
+  const { getToken } = await auth();
+  const token = await getToken();
+  const listing = await getListing(Number(params.id), token);
   const ringgit = (listing.price_cents / 100).toFixed(2);
   const unitLabel = listing.price_unit === "daily" ? "day" : "month";
 

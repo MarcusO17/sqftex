@@ -2253,10 +2253,15 @@ cross-task interfaces are produced.
 
 - [ ] **Step 1: Install Clerk's Next.js SDK**
 
+**Correction found during implementation:** latest `@clerk/nextjs` (7.x) requires Next.js
+`^15.2.8` or newer as a peer dependency, but this project is on Next 14.2.35 (unrelated to this
+migration — not something to upgrade as a side effect here). Pin to the latest 6.x release
+instead, which supports `^14.2.25`:
+
 Run (PowerShell, `frontend/`):
 ```
 cd E:\003Resources\001Repositories\sqftex\frontend
-npm install @clerk/nextjs
+npm install @clerk/nextjs@6.39.6
 ```
 
 - [ ] **Step 2: Create `frontend/middleware.ts`**

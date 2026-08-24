@@ -1,29 +1,20 @@
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { auth } from "@clerk/nextjs/server";
 import { ListingForm } from "@/components/listings/ListingForm";
 import { NavBar } from "@/components/layout/NavBar";
-import type { User } from "@/lib/api/users";
-
-async function fetchMe(): Promise<User | null> {
-  const cookieHeader = cookies().toString();
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-
-  try {
-    const response = await fetch(`${baseUrl}/api/v1/users/me/`, {
-      headers: { cookie: cookieHeader },
-      cache: "no-store",
-    });
-    return response.ok ? ((await response.json()) as User) : null;
-  } catch {
-    return null;
-  }
-}
+import { getMe } from "@/lib/api/users";
 
 export default async function NewListingPage() {
-  const me = await fetchMe();
+  const { userId, getToken } = await auth();
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const token = await getToken();
+  const me = await getMe(token);
 
   if (!me) {
-    redirect("/login?next=/listings/new");
+    redirect("/login");
   }
 
   if (!me.is_verified) {

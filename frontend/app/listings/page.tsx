@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { listListings } from "@/lib/api/listings";
 import { NavBar } from "@/components/layout/NavBar";
 import { ListingBrowser } from "@/components/listings/ListingBrowser";
@@ -8,7 +9,9 @@ import { ListingBrowser } from "@/components/listings/ListingBrowser";
 export const dynamic = "force-dynamic";
 
 export default async function ListingsPage() {
-  const listings = await listListings();
+  const { getToken } = await auth();
+  const token = await getToken();
+  const listings = await listListings(token);
 
   return (
     <div>

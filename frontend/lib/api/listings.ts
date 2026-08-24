@@ -40,33 +40,32 @@ export interface CreateListingInput {
   longitude: number;
 }
 
-export async function listListings(): Promise<Listing[]> {
-  return apiFetch<Listing[]>("/api/v1/listings/");
+export async function listListings(token?: string | null): Promise<Listing[]> {
+  return apiFetch<Listing[]>("/api/v1/listings/", {}, token);
 }
 
-export async function getListing(id: number): Promise<Listing> {
-  return apiFetch<Listing>(`/api/v1/listings/${id}/`);
+export async function getListing(id: number, token?: string | null): Promise<Listing> {
+  return apiFetch<Listing>(`/api/v1/listings/${id}/`, {}, token);
 }
 
-export async function createListing(input: CreateListingInput): Promise<Listing> {
-  return apiFetch<Listing>("/api/v1/listings/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
+export async function createListing(input: CreateListingInput, token: string): Promise<Listing> {
+  return apiFetch<Listing>(
+    "/api/v1/listings/",
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) },
+    token
+  );
 }
 
-export async function addListingPhoto(listingId: number, file: File): Promise<ListingPhoto> {
+export async function addListingPhoto(listingId: number, file: File, token: string): Promise<ListingPhoto> {
   const formData = new FormData();
   formData.append("image", file);
-  return apiFetch<ListingPhoto>(`/api/v1/listings/${listingId}/photos/`, {
-    method: "POST",
-    body: formData,
-  });
+  return apiFetch<ListingPhoto>(
+    `/api/v1/listings/${listingId}/photos/`,
+    { method: "POST", body: formData },
+    token
+  );
 }
 
-export async function publishListing(listingId: number): Promise<Listing> {
-  return apiFetch<Listing>(`/api/v1/listings/${listingId}/publish/`, {
-    method: "POST",
-  });
+export async function publishListing(listingId: number, token: string): Promise<Listing> {
+  return apiFetch<Listing>(`/api/v1/listings/${listingId}/publish/`, { method: "POST" }, token);
 }

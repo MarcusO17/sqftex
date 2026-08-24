@@ -1,21 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { addListingPhoto, createListing, publishListing } from "@/lib/api/listings";
-import { ensureCsrfCookie } from "@/lib/api/client";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
 
 export function ListingForm() {
   const router = useRouter();
+  const { getToken } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [category, setCategory] = useState<string>(LISTING_CATEGORIES[0].value);
   const [priceUnit, setPriceUnit] = useState<"daily" | "monthly">("monthly");
-
-  useEffect(() => {
-    ensureCsrfCookie();
-  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,25 +23,31 @@ export function ListingForm() {
     const photoFile = data.get("photo") as File;
 
     try {
-      const listing = await createListing({
-        title: String(data.get("title")),
-        description: String(data.get("description")),
-        category,
-        size_sqft: Number(data.get("size_sqft")),
-        price_cents: Math.round(Number(data.get("price_myr")) * 100),
-        price_unit: priceUnit,
-        address: String(data.get("address")),
-        access_rules: String(data.get("access_rules") ?? ""),
-        prohibited_items: String(data.get("prohibited_items") ?? ""),
-        latitude: Number(data.get("latitude")),
-        longitude: Number(data.get("longitude")),
-      });
+      const token = await getToken();
+      if (!token) throw new Error("Not signed in.");
+
+      const listing = await createListing(
+        {
+          title: String(data.get("title")),
+          description: String(data.get("description")),
+          category,
+          size_sqft: Number(data.get("size_sqft")),
+          price_cents: Math.round(Number(data.get("price_myr")) * 100),
+          price_unit: priceUnit,
+          address: String(data.get("address")),
+          access_rules: String(data.get("access_rules") ?? ""),
+          prohibited_items: String(data.get("prohibited_items") ?? ""),
+          latitude: Number(data.get("latitude")),
+          longitude: Number(data.get("longitude")),
+        },
+        token
+      );
 
       if (photoFile && photoFile.size > 0) {
-        await addListingPhoto(listing.id, photoFile);
+        await addListingPhoto(listing.id, photoFile, token);
       }
 
-      await publishListing(listing.id);
+      await publishListing(listing.id, token);
       router.push(`/listings/${listing.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong creating the listing.");

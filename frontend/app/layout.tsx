@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Work_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -25,8 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${workSans.variable}`}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${archivo.variable} ${workSans.variable}`}>
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
