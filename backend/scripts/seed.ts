@@ -10,14 +10,13 @@ const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY!
 // example.com is IANA's reserved documentation domain — valid TLD, never
 // delivers mail, safe for demo/seed accounts.
 const DEMO_DOMAIN = "example.com";
-const DEMO_PASSWORD = "Demo12345!";
 
 const DEMO_USERS = [
-  { key: "host.jane", isVerified: true },
-  { key: "host.ravi", isVerified: true },
-  { key: "host.pending", isVerified: false },
-  { key: "renter.mei", isVerified: true },
-  { key: "renter.arif", isVerified: true },
+  { key: "host.jane", isVerified: true, password: "HostJane2026!" },
+  { key: "host.ravi", isVerified: true, password: "HostRavi2026!" },
+  { key: "host.pending", isVerified: false, password: "HostPending2026!" },
+  { key: "renter.mei", isVerified: true, password: "RenterMei2026!" },
+  { key: "renter.arif", isVerified: true, password: "RenterArif2026!" },
 ] as const;
 
 type ListingSeed = {
@@ -42,12 +41,12 @@ const DEMO_LISTINGS: ListingSeed[] = [
   { owner: "host.ravi", title: "Half Warehouse Bay, Cheras", category: "warehouse_bay", sizeSqft: 900, priceCents: 3500, priceUnit: "daily", status: "active", address: "Taman Segar, Cheras, Kuala Lumpur", lat: 3.0980, lng: 101.7360 },
 ];
 
-async function findOrCreateClerkUser(email: string) {
+async function findOrCreateClerkUser(email: string, password: string) {
   const existing = await clerkClient.users.getUserList({ emailAddress: [email] });
   if (existing.data.length > 0) return existing.data[0];
   return clerkClient.users.createUser({
     emailAddress: [email],
-    password: DEMO_PASSWORD,
+    password,
     skipPasswordChecks: true,
   });
 }
@@ -62,7 +61,7 @@ async function main() {
   const users: Record<string, { id: number }> = {};
   for (const demo of DEMO_USERS) {
     const email = `${demo.key}@${DEMO_DOMAIN}`;
-    const clerkUser = await findOrCreateClerkUser(email);
+    const clerkUser = await findOrCreateClerkUser(email, demo.password);
     const dbUser = await prisma.user.upsert({
       where: { clerkUserId: clerkUser.id },
       update: { email, isVerified: demo.isVerified },
@@ -129,10 +128,10 @@ async function main() {
   }
 
   console.log(`\nDone. ${createdCount} new listing(s) created.`);
-  console.log(`\nDemo accounts (all use the same password: ${DEMO_PASSWORD}):`);
+  console.log(`\nDemo accounts (each has its own password):`);
   for (const demo of DEMO_USERS) {
     const role = demo.isVerified ? "verified" : "pending verification";
-    console.log(`  ${demo.key}@${DEMO_DOMAIN}  (${role})`);
+    console.log(`  ${demo.key}@${DEMO_DOMAIN}  /  ${demo.password}  (${role})`);
   }
 }
 
