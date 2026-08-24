@@ -2100,7 +2100,7 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"
 - Create: `frontend/components/listings/wizard/ReviewStep.tsx`
 
 **Interfaces:**
-- Produces: `<ReviewStep draft category title description sizeSqft address priceRM priceUnit photoCount onEditStep publishing error>` — consumed by `DraftWizard` (Task 15).
+- Produces: `<ReviewStep category title sizeSqft address priceRM priceUnit photoCount onEditStep publishing error>` — consumed by `DraftWizard` (Task 15).
 
 - [ ] **Step 1: Write `ReviewStep.tsx`**
 
