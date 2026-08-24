@@ -9,13 +9,13 @@ import { useTiltEffect, TiltGlare } from "@/components/ui/tilt";
 
 const MotionLink = motion(Link);
 
-// "Manifest Stamp" layout (category as a rotated rubber-stamp badge on the
-// photo, size/price as a label-value spec row under a hairline rule) +
-// "Loose Photo" treatment (the photo itself sits a hair off-square with its
-// own shadow, rather than flush/bordered) — the two directions the human
-// picked from components/listings' design exploration. One signature
-// "wonky" move (the tilted photo + stamp) against an otherwise precise,
-// borderless grid — see that exploration for the rejected alternatives.
+// "Manifest Stamp" layout (size/price as a label-value spec row under a
+// hairline rule) + "Loose Photo" treatment (the photo itself sits a hair
+// off-square with its own shadow, rather than flush/bordered) — picked
+// from components/listings' design exploration, minus the literal rubber-
+// stamp badge for category (turned out too gimmicky in practice) — that's
+// back to a plain eyebrow label instead. One signature "wonky" move (the
+// tilted photo) against an otherwise precise, borderless grid.
 //
 // `id` matches what the map's pin-click focus (ListingBrowser) scrolls to
 // and `focused` is the highlight that follows — see ListingBrowser.tsx.
@@ -85,53 +85,12 @@ export function ListingCard({ listing, focused }: { listing: Listing; focused?: 
               </svg>
             </div>
           )}
-
-          {/* Category as a rubber-stamp badge instead of plain uppercase
-              text — double ring (solid outer, dashed inner), pinned to the
-              photo's bottom-left corner. */}
-          <div
-            style={{
-              position: "absolute",
-              left: 10,
-              bottom: 10,
-              transform: "rotate(-8deg)",
-              width: 62,
-              height: 62,
-              borderRadius: "50%",
-              border: "1.5px solid var(--primary)",
-              background: "rgba(250,250,251,0.92)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 4,
-                borderRadius: "50%",
-                border: "1px dashed var(--primary)",
-                opacity: 0.55,
-              }}
-            />
-            <span
-              style={{
-                fontSize: 8.5,
-                fontWeight: 800,
-                letterSpacing: "0.02em",
-                textTransform: "uppercase",
-                color: "var(--primary)",
-                textAlign: "center",
-                lineHeight: 1.2,
-                padding: "0 6px",
-              }}
-            >
-              {categoryLabel(listing.category)}
-            </span>
-          </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 0, padding: "10px 10px 10px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ flex: 1, minWidth: 0, padding: "10px 10px 10px 0", display: "flex", flexDirection: "column", gap: 6 }}>
+          <div className="label" style={{ color: "var(--primary)" }}>
+            {categoryLabel(listing.category)}
+          </div>
           <h3 style={{ fontSize: 19 }}>{listing.title}</h3>
 
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 500 }}>

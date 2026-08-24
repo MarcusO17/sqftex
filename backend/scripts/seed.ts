@@ -30,15 +30,20 @@ type ListingSeed = {
   address: string;
   lat: number;
   lng: number;
+  // Real (freely-licensed, Unsplash) photos matched to each listing's
+  // category/vibe — not literal photos of these fictional addresses, but
+  // enough to make the browse page/cards look populated instead of empty
+  // placeholder icons everywhere.
+  photoUrl: string;
 };
 
 const DEMO_LISTINGS: ListingSeed[] = [
-  { owner: "host.jane", title: "Spare Room in PJ Old Town", category: "spare_room", sizeSqft: 120, priceCents: 15000, priceUnit: "monthly", status: "active", address: "Jalan Timur, Petaling Jaya Old Town, Selangor", lat: 3.1073, lng: 101.6415 },
-  { owner: "host.jane", title: "Double Garage Bay, Subang Jaya", category: "garage", sizeSqft: 280, priceCents: 45000, priceUnit: "monthly", status: "active", address: "SS15, Subang Jaya, Selangor", lat: 3.0738, lng: 101.5810 },
-  { owner: "host.jane", title: "Small Storage Nook, Bangsar", category: "spare_room", sizeSqft: 60, priceCents: 800, priceUnit: "daily", status: "draft", address: "Jalan Telawi, Bangsar, Kuala Lumpur", lat: 3.1300, lng: 101.6700 },
-  { owner: "host.ravi", title: "Shoplot Back Room, Klang", category: "shoplot_back_room", sizeSqft: 200, priceCents: 35000, priceUnit: "monthly", status: "active", address: "Batu Unjur, Klang, Selangor", lat: 3.0333, lng: 101.4500 },
-  { owner: "host.ravi", title: "Warehouse Bay, Shah Alam", category: "warehouse_bay", sizeSqft: 1500, priceCents: 180000, priceUnit: "monthly", status: "active", address: "Seksyen 15, Shah Alam, Selangor", lat: 3.0654, lng: 101.5178 },
-  { owner: "host.ravi", title: "Half Warehouse Bay, Cheras", category: "warehouse_bay", sizeSqft: 900, priceCents: 3500, priceUnit: "daily", status: "active", address: "Taman Segar, Cheras, Kuala Lumpur", lat: 3.0980, lng: 101.7360 },
+  { owner: "host.jane", title: "Spare Room in PJ Old Town", category: "spare_room", sizeSqft: 120, priceCents: 15000, priceUnit: "monthly", status: "active", address: "Jalan Timur, Petaling Jaya Old Town, Selangor", lat: 3.1073, lng: 101.6415, photoUrl: "https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.jane", title: "Double Garage Bay, Subang Jaya", category: "garage", sizeSqft: 280, priceCents: 45000, priceUnit: "monthly", status: "active", address: "SS15, Subang Jaya, Selangor", lat: 3.0738, lng: 101.5810, photoUrl: "https://images.unsplash.com/photo-1649313444539-a8900c5cdc54?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.jane", title: "Small Storage Nook, Bangsar", category: "spare_room", sizeSqft: 60, priceCents: 800, priceUnit: "daily", status: "draft", address: "Jalan Telawi, Bangsar, Kuala Lumpur", lat: 3.1300, lng: 101.6700, photoUrl: "https://images.unsplash.com/photo-1662320154145-7263e998e7a2?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.ravi", title: "Shoplot Back Room, Klang", category: "shoplot_back_room", sizeSqft: 200, priceCents: 35000, priceUnit: "monthly", status: "active", address: "Batu Unjur, Klang, Selangor", lat: 3.0333, lng: 101.4500, photoUrl: "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.ravi", title: "Warehouse Bay, Shah Alam", category: "warehouse_bay", sizeSqft: 1500, priceCents: 180000, priceUnit: "monthly", status: "active", address: "Seksyen 15, Shah Alam, Selangor", lat: 3.0654, lng: 101.5178, photoUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop" },
+  { owner: "host.ravi", title: "Half Warehouse Bay, Cheras", category: "warehouse_bay", sizeSqft: 900, priceCents: 3500, priceUnit: "daily", status: "active", address: "Taman Segar, Cheras, Kuala Lumpur", lat: 3.0980, lng: 101.7360, photoUrl: "https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop" },
 ];
 
 async function findOrCreateClerkUser(email: string, password: string) {
@@ -102,32 +107,45 @@ async function main() {
   }
 
   let createdCount = 0;
+  let photosAddedCount = 0;
   for (const seed of DEMO_LISTINGS) {
-    const existing = await prisma.listing.findFirst({
+    let listing = await prisma.listing.findFirst({
       where: { ownerId: users[seed.owner].id, title: seed.title },
     });
-    if (existing) continue;
-    await prisma.listing.create({
-      data: {
-        ownerId: users[seed.owner].id,
-        title: seed.title,
-        description: `${seed.title} — available now. Clean, secure, easy access.`,
-        category: seed.category,
-        sizeSqft: seed.sizeSqft,
-        priceCents: seed.priceCents,
-        priceUnit: seed.priceUnit,
-        status: seed.status,
-        address: seed.address,
-        accessRules: "Contact host to arrange a visit before move-in.",
-        prohibitedItems: "No flammable, perishable, or illegal items.",
-        lat: seed.lat,
-        lng: seed.lng,
-      },
-    });
-    createdCount += 1;
+    if (!listing) {
+      listing = await prisma.listing.create({
+        data: {
+          ownerId: users[seed.owner].id,
+          title: seed.title,
+          description: `${seed.title} — available now. Clean, secure, easy access.`,
+          category: seed.category,
+          sizeSqft: seed.sizeSqft,
+          priceCents: seed.priceCents,
+          priceUnit: seed.priceUnit,
+          status: seed.status,
+          address: seed.address,
+          accessRules: "Contact host to arrange a visit before move-in.",
+          prohibitedItems: "No flammable, perishable, or illegal items.",
+          lat: seed.lat,
+          lng: seed.lng,
+        },
+      });
+      createdCount += 1;
+    }
+
+    // Backfill a photo even on a listing that already existed from a
+    // previous seed run (an earlier version of this script didn't add
+    // any), rather than only photographing brand-new listings.
+    const hasPhoto = await prisma.listingPhoto.findFirst({ where: { listingId: listing.id } });
+    if (!hasPhoto) {
+      await prisma.listingPhoto.create({
+        data: { listingId: listing.id, imageUrl: seed.photoUrl, order: 0 },
+      });
+      photosAddedCount += 1;
+    }
   }
 
-  console.log(`\nDone. ${createdCount} new listing(s) created.`);
+  console.log(`\nDone. ${createdCount} new listing(s) created, ${photosAddedCount} photo(s) added.`);
   console.log(`\nDemo accounts (each has its own password):`);
   for (const demo of DEMO_USERS) {
     const role = demo.isVerified ? "verified" : "pending verification";
