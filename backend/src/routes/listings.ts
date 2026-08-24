@@ -1,9 +1,11 @@
 import { ListingCategory, ListingStatus, PriceUnit } from "@prisma/client";
 import { Router } from "express";
+import multer from "multer";
 import { z } from "zod";
 import { attachDbUserIfPresent, requireAuth } from "../middleware/auth";
 import { prisma } from "../prisma";
 import { toListingJSON } from "../serializers/listing";
+import { uploadPublicObject } from "../storage/r2";
 
 export const listingsRouter = Router();
 
@@ -134,4 +136,44 @@ listingsRouter.delete("/:id/", requireAuth, async (req, res) => {
   }
   await prisma.listing.delete({ where: { id } });
   res.status(204).end();
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+listingsRouter.post("/:id/photos/", requireAuth, upload.single("image"), async (req, res) => {
+  const id = Number(req.params.id);
+  const listing = await prisma.listing.findUnique({ where: { id }, include: { photos: true } });
+  if (!listing || listing.ownerId !== req.dbUser!.id) {
+    res.status(404).json({ detail: "Not found." });
+    return;
+  }
+  if (!req.file) {
+    res.status(400).json({ detail: "No image file provided." });
+    return;
+  }
+
+  const imageUrl = await uploadPublicObject(req.file.buffer, req.file.mimetype, req.file.originalname);
+  const photo = await prisma.listingPhoto.create({
+    data: { listingId: id, imageUrl, order: listing.photos.length },
+  });
+  res.status(201).json({ id: photo.id, image: photo.imageUrl, order: photo.order });
+});
+
+listingsRouter.post("/:id/publish/", requireAuth, async (req, res) => {
+  const id = Number(req.params.id);
+  const listing = await prisma.listing.findUnique({ where: { id }, include: { photos: true } });
+  if (!listing || listing.ownerId !== req.dbUser!.id) {
+    res.status(404).json({ detail: "Not found." });
+    return;
+  }
+  if (listing.photos.length === 0) {
+    res.status(400).json({ detail: "Add at least one photo before publishing." });
+    return;
+  }
+  const updated = await prisma.listing.update({
+    where: { id },
+    data: { status: ListingStatus.active },
+    include: { photos: true },
+  });
+  res.json(toListingJSON(updated));
 });
