@@ -9,9 +9,15 @@ Requires Docker Desktop (the backend runs containerized — see
 `docs/superpowers/plans/2026-08-23-foundations-listing-slice.md` for why).
 
 ```bash
-cp backend/.env.example backend/.env   # fill in local values
+cp backend/.env.example backend/.env   # fill in Clerk/admin values
 docker-compose up
 ```
+
+`docker-compose.yml` includes a local Garage instance (`garage/garage.toml`) as an
+S3-compatible stand-in for Cloudflare R2, so listing-photo uploads work without
+real R2 credentials — `.env.example`'s `R2_*` defaults already point at it.
+Swap in real R2 credentials only when testing against the actual production
+storage.
 
 Backend: <http://localhost:8000>. Frontend (run separately):
 

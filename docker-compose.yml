@@ -14,6 +14,24 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+  # Local stand-in for Cloudflare R2 (backend/src/storage/r2.ts talks to
+  # whatever S3-compatible endpoint R2_ENDPOINT_URL points at). --default-bucket
+  # has Garage create the bucket and an access key from the env vars below on
+  # first boot — no manual `garage layout`/`bucket create`/`key create` needed.
+  garage:
+    image: dxflrs/garage:v2.3.0
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: GKsqftexlocaldevkey0
+      GARAGE_DEFAULT_SECRET_KEY: sqftexlocaldevsecretkeydonotuseinprod00
+      GARAGE_DEFAULT_BUCKET: sqftex-media
+    ports:
+      - "3900:3900" # S3 API
+      - "3903:3903" # admin API (health/metrics, not used by the backend)
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml
+      - sqftex_garage_meta:/tmp/meta
+      - sqftex_garage_data:/tmp/data
   web:
     build: ./backend
     command: sh -c "npx prisma migrate deploy && npm start"
@@ -27,8 +45,23 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: postgresql://sqftex:sqftex@db:5432/sqftex?schema=public
+      # Overrides whatever R2_* is in backend/.env — matches the `garage`
+      # service above, reachable by service name on the compose network
+      # (a host-side `npm run dev` instead uses R2_ENDPOINT_URL=http://localhost:3900
+      # from backend/.env, since `garage` isn't resolvable outside this network).
+      R2_ENDPOINT_URL: http://garage:3900
+      R2_ACCESS_KEY_ID: GKsqftexlocaldevkey0
+      R2_SECRET_ACCESS_KEY: sqftexlocaldevsecretkeydonotuseinprod00
+      R2_BUCKET_NAME: sqftex-media
+      # Garage's S3 API has no anonymous-read concept, unlike real R2 — the
+      # backend's own /media route (src/routes/media.ts) proxies public/*
+      # reads through the same authenticated S3 client instead.
+      R2_PUBLIC_BASE_URL: http://localhost:8000/media
     depends_on:
       - db
       - redis
+      - garage
 volumes:
   sqftex_pgdata:
+  sqftex_garage_meta:
+  sqftex_garage_data:

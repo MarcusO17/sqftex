@@ -1,0 +1,28 @@
+# Single-node Garage config for LOCAL DEV ONLY — an S3-compatible object
+# store standing in for Cloudflare R2 so `npm run dev` works without real R2
+# credentials. Never point this at production; replication_factor = 1 means
+# zero redundancy, and the secrets below are fixed/committed on purpose
+# (same convention as the "sqftex/sqftex" Postgres creds in docker-compose.yml
+# — dev-only, not reachable outside your machine's Docker network).
+metadata_dir = "/tmp/meta"
+data_dir = "/tmp/data"
+db_engine = "sqlite"
+
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+rpc_secret = "bcdfb370a41b9cad6a7bd54c00ce02e04702b20f9d6e557b3047e53c066f5d0e"
+
+[s3_api]
+# Matches the hardcoded `region: "auto"` in backend/src/storage/r2.ts (that
+# value is what real R2 expects too) — SigV4 signing fails otherwise, since
+# the client and server must agree on the region string.
+s3_region = "auto"
+api_bind_addr = "[::]:3900"
+root_domain = ".s3.garage.localhost"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "7+A02yfaiolMPRf9I/n3LtX1apGB33xCh+5VmzC9ff4="
+metrics_token = "f9jAcxp9lSWyiguVQUxYcLTGtz147zClqgTnm7ehPzk="

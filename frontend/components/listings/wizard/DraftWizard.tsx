@@ -241,7 +241,7 @@ export function DraftWizard({ draftId }: { draftId: number }) {
         stepIndex={stepIndex}
         globalStepIndex={stepIndex + 2}
         globalStepCount={6}
-        category={draft.category}
+        sqft={draft.size_sqft}
         onIndexChange={handleIndexChange}
         onNext={handleNext}
         nextLabel={submitting ? "Saving…" : stepIndex === 3 ? "Publish" : "Continue →"}

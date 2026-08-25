@@ -136,7 +136,7 @@ export function NewListingWizard() {
         stepIndex={stepIndex}
         globalStepIndex={stepIndex}
         globalStepCount={6}
-        category={category}
+        sqft={sizeSqft}
         onIndexChange={handleIndexChange}
         onNext={handleNext}
         nextLabel={submitting ? "Saving…" : "Continue →"}

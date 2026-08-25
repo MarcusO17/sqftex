@@ -3,6 +3,7 @@ import express, { Express } from "express";
 import { buildAdminRouter } from "./admin/adminRouter";
 import { clerkAuth } from "./middleware/auth";
 import { listingsRouter } from "./routes/listings";
+import { mediaRouter } from "./routes/media";
 import { usersRouter } from "./routes/users";
 
 // async because mounting AdminJS requires a dynamic import (see
@@ -27,6 +28,7 @@ export async function createApp(): Promise<Express> {
 
   app.use("/api/v1/users", usersRouter);
   app.use("/api/v1/listings", listingsRouter);
+  app.use("/media", mediaRouter);
 
   return app;
 }

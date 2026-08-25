@@ -2,10 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { WizardStyles } from "./WizardStyles";
-import { WizardMascot } from "./WizardMascot";
-import { SceneIllustration } from "./SceneIllustration";
-
-export const STEP_PROPS = ["🔍", "✏️", "📍", "🏷️", "📸", "🎉"];
+import { StepIllustration } from "./StepIllustration";
 
 const IGNORE_SELECTOR = "input, textarea, button, [role='slider'], .wizard-slider-track";
 
@@ -14,7 +11,7 @@ export function WizardShell({
   stepIndex,
   globalStepIndex,
   globalStepCount,
-  category,
+  sqft,
   onIndexChange,
   onNext,
   nextLabel,
@@ -24,7 +21,7 @@ export function WizardShell({
   stepIndex: number;
   globalStepIndex: number;
   globalStepCount: number;
-  category: string | null;
+  sqft: number;
   onIndexChange: (index: number) => void;
   onNext: () => void;
   nextLabel: string;
@@ -56,7 +53,7 @@ export function WizardShell({
     const nxt = panelRefs.current[stepIndex];
     if (cur && nxt) {
       nxt.style.transition = "none";
-      nxt.style.transform = `translateX(${26 * dir}px) scale(.97)`;
+      nxt.style.transform = `translateX(${26 * dir}px) scale(.97) rotate(${2 * dir}deg)`;
       nxt.style.opacity = "0";
       nxt.style.display = "flex";
       nxt.style.zIndex = "2";
@@ -66,9 +63,9 @@ export function WizardShell({
       // one paint and there's nothing to animate from.
       void nxt.offsetWidth;
       nxt.style.transition = "";
-      nxt.style.transform = "translateX(0) scale(1)";
+      nxt.style.transform = "translateX(0) scale(1) rotate(0deg)";
       nxt.style.opacity = "1";
-      cur.style.transform = `translateX(${-26 * dir}px) scale(.97)`;
+      cur.style.transform = `translateX(${-26 * dir}px) scale(.97) rotate(${-2 * dir}deg)`;
       cur.style.opacity = "0";
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.setTimeout(() => {
@@ -86,7 +83,12 @@ export function WizardShell({
     const stage = stageRef.current;
     if (!stage) return;
 
-    let startX = 0, dx = 0, dragging = false, neighborIdx = -1, dir = 0;
+    let startX = 0, dx = 0, dragging = false, neighborIdx = -1, dir = 0, reducedMotion = false;
+    // Velocity sample for momentum flicks: last pointermove's position/time,
+    // so onUp can tell "slow drag past the distance threshold" apart from
+    // "fast flick that hasn't traveled far yet" and honor the latter too.
+    let lastX = 0, lastT = 0, velocity = 0;
+    const FLICK_VELOCITY = 0.6; // px/ms
 
     function panel(i: number) {
       return panelRefs.current[i];
@@ -98,6 +100,10 @@ export function WizardShell({
       dragging = true;
       startX = e.clientX;
       dx = 0;
+      lastX = e.clientX;
+      lastT = e.timeStamp;
+      velocity = 0;
+      reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       stage!.setPointerCapture(e.pointerId);
     }
 
@@ -109,10 +115,18 @@ export function WizardShell({
       neighborIdx = candidate >= 0 && candidate < steps.length ? candidate : -1;
       if (neighborIdx === -1) dx *= 0.35;
 
+      const dt = e.timeStamp - lastT;
+      if (dt > 0) velocity = (e.clientX - lastX) / dt;
+      lastX = e.clientX;
+      lastT = e.timeStamp;
+
       const cur = panel(prevIndexRef.current);
       if (!cur) return;
       cur.style.transition = "none";
-      cur.style.transform = `translateX(${dx}px)`;
+      // A light rotation tilt keyed off drag distance — clamped so it stays
+      // a tactile nudge rather than a full card-flip.
+      const tilt = reducedMotion ? 0 : Math.max(-6, Math.min(6, dx / 22));
+      cur.style.transform = `translateX(${dx}px) rotate(${tilt}deg)`;
 
       if (neighborIdx !== -1) {
         const w = stage!.getBoundingClientRect().width;
@@ -123,7 +137,7 @@ export function WizardShell({
           nb.style.opacity = "1";
           nb.style.zIndex = "0";
           cur.style.zIndex = "1";
-          nb.style.transform = `translateX(${dx - dir * w}px)`;
+          nb.style.transform = `translateX(${dx - dir * w}px) rotate(${tilt}deg)`;
         }
       }
     }
@@ -135,14 +149,18 @@ export function WizardShell({
       const cur = panel(prevIndexRef.current);
       if (!cur) return;
       const threshold = w * 0.22;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reduced = reducedMotion;
+      // A fast flick in the swipe direction counts even if it hasn't crossed
+      // the distance threshold yet — dir=1 (advancing) pairs with negative
+      // velocity (moving left), dir=-1 with positive velocity.
+      const flicked = Math.abs(velocity) > FLICK_VELOCITY && Math.sign(velocity) === -dir;
 
-      if (neighborIdx !== -1 && Math.abs(dx) > threshold) {
+      if (neighborIdx !== -1 && (Math.abs(dx) > threshold || flicked)) {
         const nb = panel(neighborIdx)!;
         cur.style.transition = "";
         nb.style.transition = "";
-        cur.style.transform = `translateX(${-dir * w}px)`;
-        nb.style.transform = "translateX(0)";
+        cur.style.transform = `translateX(${-dir * w}px) rotate(0deg)`;
+        nb.style.transform = "translateX(0) rotate(0deg)";
         const landed = neighborIdx;
         window.setTimeout(() => {
           cur.style.display = "none";
@@ -154,11 +172,11 @@ export function WizardShell({
         onIndexChangeRef.current(landed);
       } else {
         cur.style.transition = "";
-        cur.style.transform = "translateX(0)";
+        cur.style.transform = "translateX(0) rotate(0deg)";
         if (neighborIdx !== -1) {
           const nb = panel(neighborIdx)!;
           nb.style.transition = "";
-          nb.style.transform = `translateX(${dir * w}px)`;
+          nb.style.transform = `translateX(${dir * w}px) rotate(0deg)`;
           window.setTimeout(() => {
             nb.style.display = "none";
             nb.style.transform = "";
@@ -203,8 +221,7 @@ export function WizardShell({
         </div>
       </div>
       <div className="wizard-illustration">
-        <SceneIllustration category={category} />
-        <WizardMascot prop={STEP_PROPS[globalStepIndex]} celebrate={globalStepIndex === globalStepCount - 1} />
+        <StepIllustration globalStepIndex={globalStepIndex} globalStepCount={globalStepCount} sqft={sqft} />
       </div>
       <div className="wizard-stage" ref={stageRef}>
         {steps.map((step, i) => (

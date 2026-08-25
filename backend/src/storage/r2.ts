@@ -6,6 +6,11 @@ import { env } from "../env";
 export const s3 = new S3Client({
   region: "auto",
   endpoint: env.R2_ENDPOINT_URL,
+  // Path-style (endpoint/bucket/key) rather than virtual-hosted-style
+  // (bucket.endpoint/key) — required for local Garage/MinIO, since
+  // "bucket.localhost" doesn't resolve. R2 supports path-style too, so this
+  // is safe for the real endpoint as well.
+  forcePathStyle: true,
   credentials: {
     accessKeyId: env.R2_ACCESS_KEY_ID,
     secretAccessKey: env.R2_SECRET_ACCESS_KEY,
