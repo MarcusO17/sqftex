@@ -109,6 +109,18 @@ const css = `
     border-radius: 50%; border: 2px solid currentColor; pointer-events: none; z-index: 1;
   }
 
+  /* ---- Review step's 3D scene (WizardReviewScene) — the wizard's one
+     WebGL moment, only ever mounted on the last step. Sized to roughly the
+     blueprint plan's own max footprint so the crossfade between the two
+     doesn't visibly jump. ---- */
+  .wizard-review-scene-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; width: min(260px, 92%); }
+  .wizard-review-canvas { width: 100%; height: 190px; }
+  .wizard-review-caption {
+    background: var(--card); padding: 3px 9px; border-radius: 7px;
+    font-size: 12.5px; font-weight: 800; letter-spacing: .02em; color: hsl(var(--muted-foreground));
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+
   .wizard-stage { grid-area: stage; position: relative; min-height: 56vh; touch-action: pan-y; overflow: hidden; }
   .wizard-panel {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
