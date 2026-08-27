@@ -28,6 +28,8 @@ model User {
   listings              Listing[]
   verifications         IdentityVerification[] @relation("Verified")
   reviewedVerifications IdentityVerification[] @relation("Reviewer")
+  bookings              Booking[]      @relation("RenterBookings")
+  savedListings         SavedListing[]
 }
 
 enum VerificationStatus {
@@ -84,6 +86,8 @@ model Listing {
   prohibitedItems String   @default("")
   status          ListingStatus @default(draft)
   photos          ListingPhoto[]
+  bookings        Booking[]
+  savedBy         SavedListing[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -94,4 +98,47 @@ model ListingPhoto {
   listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   imageUrl  String
   order     Int     @default(0)
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+// No real payment integration yet — see
+// .claude/skills/booking-payment-flow. This exists to back a renter-facing
+// "my bookings" dashboard: creating a row here just holds the request as
+// `pending`. `amountCents` is frozen from the listing's price at booking
+// time (same reasoning as commission below: never let a later price change
+// on the listing retroactively change what an existing booking shows).
+// `commissionCents` stays null until real Curlec payment capture computes
+// and freezes it — never backfill it from a live rate afterwards.
+model Booking {
+  id              Int           @id @default(autoincrement())
+  listingId       Int
+  listing         Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  renterId        Int
+  renter          User          @relation("RenterBookings", fields: [renterId], references: [id], onDelete: Cascade)
+  status          BookingStatus @default(pending)
+  startDate       DateTime
+  endDate         DateTime?
+  amountCents     Int?
+  commissionCents Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([renterId])
+  @@index([listingId])
+}
+
+model SavedListing {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId Int
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
 }

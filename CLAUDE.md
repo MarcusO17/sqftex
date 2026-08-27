@@ -1,4 +1,4 @@
-# Project: [Name TBD] — Microwarehousing Marketplace
+# Project: packrat — Microwarehousing Marketplace
 
 ## What this is
 A two-sided marketplace connecting Space Owners ("hosts") with spare space to

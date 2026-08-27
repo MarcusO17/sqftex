@@ -1,16 +1,20 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { getListing } from "@/lib/api/listings";
+import { listSavedListings } from "@/lib/api/savedListings";
 import { categoryLabel } from "@/lib/listingCategories";
 import { NavBar } from "@/components/layout/NavBar";
+import { BookingActionsCard } from "@/components/listings/BookingActionsCard";
 
 export default async function ListingDetailPage({ params }: { params: { id: string } }) {
   const { getToken } = await auth();
   const token = await getToken();
   const listing = await getListing(Number(params.id), token);
-  const priceReady = listing.price_cents !== null && listing.price_unit !== null;
-  const ringgit = priceReady && listing.price_cents !== null ? (listing.price_cents / 100).toFixed(2) : null;
-  const unitLabel = listing.price_unit === "daily" ? "day" : "month";
+  // Only worth checking saved-state for a signed-in visitor — an anonymous
+  // one can't have saved anything, and the save button routes them to
+  // /login before it'd matter anyway (see BookingActionsCard).
+  const savedListings = token ? await listSavedListings(token) : [];
+  const initialSaved = savedListings.some((s) => s.listing.id === listing.id);
 
   return (
     <div>
@@ -132,55 +136,7 @@ export default async function ListingDetailPage({ params }: { params: { id: stri
           </div>
 
           {/* Right: booking card */}
-          <div
-            style={{
-              border: "1px solid var(--line)",
-              borderRadius: 16,
-              boxShadow: "0 2px 10px rgba(14,13,16,0.06)",
-              padding: 28,
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-              position: "sticky",
-              top: 24,
-            }}
-          >
-            {priceReady ? (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-                <span style={{ fontFamily: "var(--font-heading)", fontSize: 38, fontWeight: 800 }}>
-                  RM {ringgit}
-                </span>
-                <span style={{ fontSize: 14, fontWeight: 600 }}>/ {unitLabel}</span>
-              </div>
-            ) : (
-              <div style={{ fontSize: 15, fontWeight: 500, color: "var(--secondary)" }}>
-                Price not yet set
-              </div>
-            )}
-
-            <button className="btn-primary" style={{ width: "100%" }} disabled title="Booking isn't open yet">
-              REQUEST TO BOOK
-            </button>
-
-            <p style={{ fontSize: 13, lineHeight: 1.6, fontWeight: 500 }}>
-              Bookings aren&apos;t open yet. Once they are, payment is captured at booking and
-              held in escrow until you confirm move-in.
-            </p>
-
-            <div
-              style={{
-                borderTop: "1px solid var(--line)",
-                paddingTop: 16,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              }}
-            >
-              <p style={{ fontSize: 13, fontWeight: 600 }}>
-                You&apos;ll need ID verification before this booking can be confirmed.
-              </p>
-            </div>
-          </div>
+          <BookingActionsCard listing={listing} initialSaved={initialSaved} />
         </div>
       </div>
     </div>

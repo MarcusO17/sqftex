@@ -2,8 +2,10 @@ import cors from "cors";
 import express, { Express } from "express";
 import { buildAdminRouter } from "./admin/adminRouter";
 import { clerkAuth } from "./middleware/auth";
+import { bookingsRouter } from "./routes/bookings";
 import { listingsRouter } from "./routes/listings";
 import { mediaRouter } from "./routes/media";
+import { savedListingsRouter } from "./routes/savedListings";
 import { usersRouter } from "./routes/users";
 
 // async because mounting AdminJS requires a dynamic import (see
@@ -28,6 +30,8 @@ export async function createApp(): Promise<Express> {
 
   app.use("/api/v1/users", usersRouter);
   app.use("/api/v1/listings", listingsRouter);
+  app.use("/api/v1/bookings", bookingsRouter);
+  app.use("/api/v1/saved-listings", savedListingsRouter);
   app.use("/media", mediaRouter);
 
   return app;

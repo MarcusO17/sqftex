@@ -38,6 +38,11 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      # Same reasoning as node_modules above: without this, the bind mount
+      # papers over the image's `npm run build` output with the host
+      # checkout, which has no dist/ (local dev uses tsx watch, not tsc) —
+      # `npm start` then fails with MODULE_NOT_FOUND on dist/src/server.js.
+      - /app/dist
     ports:
       - "8000:8000"
       - "5555:5555" # Prisma Studio (npm run dev now always runs it alongside the server)

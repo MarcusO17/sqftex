@@ -215,7 +215,7 @@ export function WizardShell({
         />
       </div>
       <div className="wizard-topbar">
-        <div className="wizard-wordmark">sqftex</div>
+        <div className="wizard-wordmark">packrat</div>
         <div className="wizard-stepcount">
           Step {globalStepIndex + 1} / {globalStepCount}
         </div>

@@ -1,4 +1,4 @@
-# sqftex
+# packrat
 
 Microwarehousing marketplace — Malaysia launch. See `docs/PRD.md` for the
 product spec and `CLAUDE.md` for stack/conventions.

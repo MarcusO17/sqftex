@@ -31,7 +31,7 @@ export function NavBar({ variant }: NavBarProps) {
     >
       <div style={{ display: "flex", alignItems: "center", gap: 44 }}>
         <Link href="/" style={{ fontFamily: "var(--font-heading)", fontSize: 24, fontWeight: 800 }}>
-          sqftex
+          packrat
         </Link>
         {variant === "app" && (
           <div style={{ display: "flex", gap: 28 }}>
@@ -42,6 +42,9 @@ export function NavBar({ variant }: NavBarProps) {
               List a space
             </Link>
             <SignedIn>
+              <Link href="/dashboard" className="nav-link">
+                Dashboard
+              </Link>
               <Link href="/profile" className="nav-link">
                 Profile
               </Link>

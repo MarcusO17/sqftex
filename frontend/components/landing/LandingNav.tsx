@@ -58,9 +58,16 @@ export function LandingNav() {
             letterSpacing: "-0.01em",
           }}
         >
-          sqftex
+          packrat
         </Link>
         <div style={{ display: "flex", gap: 26 }}>
+          <Link
+            href="/listings"
+            className="landing-navlink"
+            style={{ color: "var(--landing-nav-link)", fontWeight: 600, fontSize: 14.5 }}
+          >
+            Listings
+          </Link>
           <a
             href="#how-it-works"
             className="landing-navlink"

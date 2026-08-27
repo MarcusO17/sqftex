@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 // Shared shell for /login and /sign-up: brand mark + heading on the left
 // (with the actual Clerk component as `children`), a full-height photo
@@ -16,12 +17,15 @@ export function AuthSplitLayout({
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-2">
       <div className="flex flex-col gap-8 p-6 md:p-10" style={{ background: "var(--paper)" }}>
-        <Link
-          href="/"
-          style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 800, color: "var(--ink)" }}
-        >
-          sqftex
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Link
+            href="/"
+            style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 800, color: "var(--ink)" }}
+          >
+            packrat
+          </Link>
+          <ThemeToggle />
+        </div>
 
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm">
@@ -57,10 +61,10 @@ export function AuthSplitLayout({
 }
 
 // Clerk appearance override shared by both <SignIn> and <SignUp> here: the
-// global theming lives on <ClerkProvider> (app/layout.tsx) and applies
-// everywhere, including the nav's modal; this local override additionally
-// strips the card chrome/header since this page already shows its own
-// brand heading above the form.
+// global theming lives on <ClerkProvider> (app/layout.tsx, via
+// ClerkThemeProvider) and applies everywhere, including the nav's modal;
+// this local override additionally strips the card chrome/header since this
+// page already shows its own brand heading above the form.
 export const authFormAppearance = {
   elements: {
     rootBox: "w-full",

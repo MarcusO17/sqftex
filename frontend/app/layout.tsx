@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Unbounded, Manrope } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkThemeProvider } from "@/components/layout/ClerkThemeProvider";
 import "./globals.css";
 
 // Shared app-wide type — previously Archivo/Work Sans (the old
@@ -24,9 +24,9 @@ const sans = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "sqftex — Microwarehousing for Malaysia",
+  title: "packrat — Microwarehousing for Malaysia",
   description:
-    "sqftex connects Space Owners with spare square footage to Space Seekers who need short- or mid-term storage.",
+    "packrat connects Space Owners with spare square footage to Space Seekers who need short- or mid-term storage.",
 };
 
 export default function RootLayout({
@@ -35,28 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      // Global theming only — applies to every Clerk surface, including the
-      // nav's modal sign-in (which has no heading of its own, so it keeps
-      // Clerk's default card/header for context). The dedicated /login and
-      // /sign-up pages additionally hide the card/header locally (see
-      // AuthSplitLayout) since those already show a custom brand heading.
-      appearance={{
-        variables: {
-          colorPrimary: "var(--primary)",
-        },
-        elements: {
-          socialButtonsBlockButton: "border-[var(--line)] hover:bg-[var(--card)]",
-          dividerLine: "bg-[var(--line)]",
-          formFieldInput: "border-[var(--line)]",
-          formButtonPrimary: "normal-case text-sm",
-          footerActionLink: "text-[var(--primary)] underline-offset-4",
-        },
-      }}
-    >
+    <ClerkThemeProvider>
       <html lang="en" className={`${display.variable} ${sans.variable}`}>
         <body>{children}</body>
       </html>
-    </ClerkProvider>
+    </ClerkThemeProvider>
   );
 }
