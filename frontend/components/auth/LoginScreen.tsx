@@ -1,22 +1,13 @@
-import { SignIn } from "@clerk/nextjs";
-import { AuthSplitLayout, authFormAppearance } from "./AuthSplitLayout";
+import { AuthSplitLayout } from "./AuthSplitLayout";
+import { LoginForm } from "./LoginForm";
 
 // Right-panel image: drop a file at `public/login-hero.jpg` (portrait-ish
 // crop, storage/warehouse imagery works well) — falls back to a plain
 // tinted panel until one exists, no broken-image icon.
-export function LoginScreen() {
+export function LoginScreen({ afterSignInUrl }: { afterSignInUrl?: string }) {
   return (
-    <AuthSplitLayout
-      heading={
-        <>
-          Welcome back.
-          <br />
-          Log in to your account.
-        </>
-      }
-      tagline="Verified hosts. Escrow-protected bookings. Spare space, sorted fast."
-    >
-      <SignIn path="/login" routing="path" signUpUrl="/sign-up" appearance={authFormAppearance} />
+    <AuthSplitLayout tagline="Verified hosts. Escrow-protected bookings. Spare space, sorted fast.">
+      <LoginForm afterSignInUrl={afterSignInUrl} />
     </AuthSplitLayout>
   );
 }

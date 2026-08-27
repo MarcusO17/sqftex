@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { LoginDialog } from "@/components/auth/LoginDialog";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 // Scroll threshold, in pixels, past which the pill switches to its
@@ -87,7 +88,7 @@ export function LandingNav() {
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <ThemeToggle />
         <SignedOut>
-          <SignInButton mode="modal">
+          <LoginDialog>
             <button
               type="button"
               className="landing-navlink"
@@ -104,7 +105,7 @@ export function LandingNav() {
             >
               Log in
             </button>
-          </SignInButton>
+          </LoginDialog>
         </SignedOut>
         <SignedIn>
           <UserButton afterSignOutUrl="/" />

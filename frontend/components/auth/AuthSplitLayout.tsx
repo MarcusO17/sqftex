@@ -10,7 +10,7 @@ export function AuthSplitLayout({
   tagline,
   children,
 }: {
-  heading: React.ReactNode;
+  heading?: React.ReactNode;
   tagline: string;
   children: React.ReactNode;
 }) {
@@ -29,12 +29,14 @@ export function AuthSplitLayout({
 
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm">
-            <h1
-              className="mb-8 text-3xl"
-              style={{ fontFamily: "var(--font-heading)", fontWeight: 800, color: "var(--ink)" }}
-            >
-              {heading}
-            </h1>
+            {heading && (
+              <h1
+                className="mb-8 text-3xl"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 800, color: "var(--ink)" }}
+              >
+                {heading}
+              </h1>
+            )}
             {children}
           </div>
         </div>
